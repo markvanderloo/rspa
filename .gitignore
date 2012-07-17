@@ -1,0 +1,7 @@
+# compiled source
+*.o
+*.so
+# temporary vim files
+*.swp
+
+
