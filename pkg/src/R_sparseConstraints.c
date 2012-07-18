@@ -20,9 +20,9 @@ void R_print_sc_row(SparseConstraints *x, int i){
     op = i < x->neq ? '=' : '<';
 
     for (int j=0; j < n; j++){
-        Rprintf("%g*x%d + ", x->A[i][j], x->index[i][j]);
+        Rprintf("%g*x%d + ", x->A[i][j], 1+x->index[i][j]);
     }
-    Rprintf("%g*x%d %.1s %g\n",x->A[i][n], x->index[i][n], &op ,x->b[n]);
+    Rprintf("%g*x%d %.1s %g\n",x->A[i][n], 1+x->index[i][n], &op ,x->b[n]);
 
 }
 

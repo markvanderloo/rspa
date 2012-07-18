@@ -5,6 +5,7 @@
 #include "sparseConstraints.h"
 #include "solve.h"
 
+#include <R.h>
 // update equalities
 static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa, int k){
     
@@ -31,21 +32,23 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa
 
 // update inequalities: alpha and x.
 static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *alpha, double awa, int k){
-
+    
     double *ak = E->A[k];
     int *I = E->index[k];
     int nrag = E->nrag[k];
     double wa[nrag];
     
+    double alpha_old = alpha[k];
     double ax=0;
 
     for ( int j=0; j<nrag; j++){
         ax += ak[j] * x[I[j]];
         wa[j] = w[I[j]] * ak[j];
     }
-    int alpha_old = alpha[k];
-    alpha[k] = alpha[k] + (ax - E->b[k])/awa;
-    alpha[k] = alpha[k] < 0 ? alpha[k] : 0;
+     alpha[k] = (ax - E->b[k])/awa - alpha[k];
+      // eqn from paper but wrong by a minus sign.
+    //alpha[k] = alpha[k] + (ax - E->b[k])/awa;
+    alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
     for ( int j=0; j<nrag; j++ ){
         x[I[j]] -= wa[j]*(alpha_old - alpha[k]);
@@ -61,11 +64,11 @@ static double maxdist(double *x, double *y, int n){
         t = fabs(x[j]-y[j]);
         m = t > m ? t : m;
     }
+    return m;
 }
 
-
 // successive projection algorithm
-void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol){
+void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *maxiter ){
     
     int m = E->nedits;
     int n = E->nvar;
@@ -73,8 +76,8 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol){
     double awa[m];
     double xt[n];    
     int nrag;
-    double alpha[m];
-
+    double *alpha = (double *) calloc(m,sizeof(double));
+    int niter = 0;
 
     // we only need w's inverse.
     for ( int k=0; k < m; w[k++] = 1/w[k]);
@@ -87,20 +90,21 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol){
         }
     }
 
-    for ( int i=0; i<n; xt[i]=x[i] );
+    for ( int i=0; i<n; xt[i++]=x[i] );
     double diff = DBL_MAX;
-    while ( diff > tol[0] ){
+    
+    while ( diff > tol[0] && niter < maxiter[0] ){
         for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, w, awa[k], k);
         for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, w, alpha, awa[k], k);
-        diff = 0;
-        for ( int j=0; j<n; j++ ){
-            diff += (xt[j]-x[j])*(xt[j]-x[j]);
-        }
         diff = maxdist(xt, x, n);
         for (int j=0; j<n; xt[j++] = x[j]);
+        ++niter;
+      //Rprintf("\ni=%d, diff = %g, alpha:", niter, diff);
+      //for ( int mm=0; mm < m; Rprintf("%g, ",alpha[mm++]));
     }
     tol[0] = diff;
-
+    maxiter[0] = niter;
+    free(alpha);
 }
 
 
