@@ -1,18 +1,23 @@
 
 library(editrules)
 
+# example of Pannekoek and Chun (2012)
 E <- editmatrix(expression(
-  3*x1 + 4*x2 == 5*x3,
-  6*x3 + 7*x4 == 8,
-  x5 < 0))
+    x1 - x5 + x8 == 0,
+    x5 - x3 - x4 == 0,
+    x8 - x6 - x7 == 0
+))
+x <- c(33,2,100,3,103,50,20,70)*10
+w <- rep(1,length(x))
 
-dyn.load("../pkg/src/R_sparseConstraints.so")
+dyn.load("../pkg/src/R_solve.so")
+fs <- dir("../pkg/R/",full.names=TRUE)
+for ( f in fs ) dmp <- source(f)
 
-e <- .Call("R_sc_from_matrix",getA(E),getb(E),2L,1e-8)
+e <- sparseConstraints(E)
+print(e)
 
-.Call("R_print_sc",e)
-
-.Call("R_sne_del",e)
+.Call('R_solve_sc_spa',e$sc,x, w, 1e-5)
 
 
 
