@@ -20,12 +20,13 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
     x <- x[I,];
     e <- new.env();
     e$sc <- .Call("R_sc_from_matrix", getA(x), getb(x), sum(ieq), tol)
+    e$names <- getVars(E)
     structure(e,class="sparseConstraints")
 }
 
 
 print.sparseConstraints <- function(x,...){
-    .Call("R_print_sc",x$sc)
+    .Call("R_print_sc",x$sc, x$names)
 }
 
 

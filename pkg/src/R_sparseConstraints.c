@@ -13,20 +13,22 @@ void R_sc_del(SEXP p){
 }
 
 
-void R_print_sc_row(SparseConstraints *x, int i){
+void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
     char op;
     int n = x->nrag[i]-1;
 
     op = i < x->neq ? '=' : '<';
 
     for (int j=0; j < n; j++){
-        Rprintf("%g*x%d + ", x->A[i][j], 1+x->index[i][j]);
+        Rprintf("%g*%s + ", x->A[i][j], CHAR(STRING_ELT(names,x->index[i][j])) );
     }
-    Rprintf("%g*x%d %.1s %g\n",x->A[i][n], 1+x->index[i][n], &op ,x->b[n]);
+    Rprintf("%g*%s %.1s %g\n",x->A[i][n], CHAR(STRING_ELT(names,x->index[i][n])), &op ,x->b[n]);
 
 }
 
-SEXP R_print_sc(SEXP p){
+SEXP R_print_sc(SEXP p, SEXP names){
+    PROTECT(p);
+    PROTECT(names);
     SparseConstraints * xp = R_ExternalPtrAddr(p);
     if (!xp){
         Rprintf("NULL pointer\n");
@@ -37,8 +39,9 @@ SEXP R_print_sc(SEXP p){
     Rprintf("  Variables   : %d\n",xp->nvar);
 
     for ( int i =0; i < xp->nedits; i++){
-       R_print_sc_row(xp, i); 
+       R_print_sc_row(xp, i, names); 
     }
+    UNPROTECT(2);
     return R_NilValue;
 }
 
