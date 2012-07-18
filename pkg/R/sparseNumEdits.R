@@ -1,0 +1,31 @@
+
+#' generate sparse restriction set
+#'
+#' @param x 
+#'
+sparseConstraints = function(x, ...){
+    UseMethod("sparseConstraints")
+}
+
+
+#' Sparse numeric edits from {\sf editmatrix} object
+#'
+#'
+#'
+sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
+    require(editrules)
+
+    ieq <- getOps(E) == '=='
+    I <- c(which(ieq),which(!ieq))
+    x <- x[I,];
+    e <- new.env();
+    e$sc <- .Call("R_sc_from_matrix", getA(x), getb(x), sum(ieq), tol)
+    structure(e,class="sparseConstraints")
+}
+
+
+print.sparseConstraints <- function(x,...){
+    .Call("R_print_sc",x$sc)
+}
+
+
