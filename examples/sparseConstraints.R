@@ -32,16 +32,9 @@ I
 u <- x[I]
 w <- rep(1,length(u))
 
-u
 y = .Call('R_solve_sc_spa',e$sc,u, w, 1e-5,50L)
-y
-sol <- x;
-sol[I] <- y
 
 
-violatedEdits(E,sol,tol=1e-4)
-sol
-x
-sqrt(sum((x-sol)^2))
+adapt(e,u)
 
 

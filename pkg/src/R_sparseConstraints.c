@@ -13,16 +13,18 @@ void R_sc_del(SEXP p){
 }
 
 
-void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
+static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
     char op;
     int n = x->nrag[i]-1;
-
+    double b;
     op = i < x->neq ? '=' : '<';
 
     for (int j=0; j < n; j++){
         Rprintf("%g*%s + ", x->A[i][j], CHAR(STRING_ELT(names,x->index[i][j])) );
     }
-    Rprintf("%g*%s %.1s %g\n",x->A[i][n], CHAR(STRING_ELT(names,x->index[i][n])), &op ,x->b[n]);
+    // prevent -0 printing
+    b = b == 0.0 ? 0.0 : b;    
+    Rprintf("%g*%s %.1s %g\n",x->A[i][n], CHAR(STRING_ELT(names,x->index[i][n])), &op , b);
 
 }
 
