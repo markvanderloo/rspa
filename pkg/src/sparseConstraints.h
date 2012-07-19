@@ -25,9 +25,11 @@ typedef struct _SparseConstraints {
 
 void sc_del(SparseConstraints *);
 
+SparseConstraints * sc_new( int );
+
 SparseConstraints * sc_from_matrix(double *, double *, int, int, int, double);
 
-SparseConstraints * sc_new( int );
+SparseConstraints * sc_from_sparse_matrix(int *, int *, double *, int, double *, int, int);
 
 
 

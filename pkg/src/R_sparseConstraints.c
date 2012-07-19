@@ -4,6 +4,7 @@
 
 #include <R.h>
 #include <Rdefines.h>
+#include "R_sparseConstraints.h"
 #include "sparseConstraints.h"
 
 void R_sc_del(SEXP p){
@@ -28,22 +29,27 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
 
 }
 
-SEXP R_print_sc(SEXP p, SEXP names){
+SEXP R_print_sc(SEXP p, SEXP names, SEXP maxprint){
     PROTECT(p);
     PROTECT(names);
+    PROTECT(maxprint);
+    int mp = INTEGER(maxprint)[0];
     SparseConstraints * xp = R_ExternalPtrAddr(p);
     if (!xp){
         Rprintf("NULL pointer\n");
         return R_NilValue;
     }
-    Rprintf("Sparse numerical constraints.\n");
-    Rprintf("  Restrictions: %d\n",xp->nedits);
-    Rprintf("  Variables   : %d\n",xp->nvar);
 
-    for ( int i =0; i < xp->nedits; i++){
+    mp = mp < xp->nedits ? mp : xp->nedits;
+    Rprintf("Sparse numerical constraints.\n");
+    Rprintf("  Variables   : %d\n",xp->nvar);
+    Rprintf("  Restrictions: %d (printing %d)\n",xp->nedits, mp);
+
+
+    for ( int i =0; i < mp; i++){
        R_print_sc_row(xp, i, names); 
     }
-    UNPROTECT(2);
+    UNPROTECT(3);
     return R_NilValue;
 }
 
@@ -70,6 +76,38 @@ SEXP R_sc_from_matrix(SEXP A, SEXP b, SEXP neq, SEXP tol){
 
     return ptr;
 }
+
+
+// Create ragged array (sparse) representation from row-col-coefficient-b representation.
+SEXP R_sc_from_sparse_matrix(SEXP rows, SEXP cols, SEXP coef, SEXP b, SEXP neq ){
+    PROTECT(rows);
+    PROTECT(cols);
+    PROTECT(coef);
+    PROTECT(b);
+    PROTECT(neq);
+
+    SparseConstraints *E;
+Rprintf("length(b)=%d\n",length(b));
+    E = sc_from_sparse_matrix(
+        INTEGER(rows), 
+        INTEGER(cols), 
+        REAL(coef),
+        length(rows),
+        REAL(b),
+        length(b),
+        INTEGER(neq)[0]
+    );
+
+    SEXP ptr = R_MakeExternalPtr(E, R_NilValue, R_NilValue);
+    PROTECT(ptr);
+    R_RegisterCFinalizerEx(ptr, R_sc_del, TRUE);
+
+    UNPROTECT(6);
+
+    return ptr;
+} 
+
+
 
 
 

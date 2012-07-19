@@ -25,8 +25,8 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 }
 
 
-print.sparseConstraints <- function(x,...){
-    dump <- .Call("R_print_sc",x$sc, x$names)
+print.sparseConstraints <- function(x, maxprint=10L, ...){
+    dump <- .Call("R_print_sc",x$sc, x$names, as.integer(maxprint))
 }
 
 

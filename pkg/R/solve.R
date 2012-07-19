@@ -20,8 +20,25 @@ adapt <- function(constraints, x,...){
 adapt.sparseConstraints <- function(constraints, x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5, ...){
 
    y = .Call('R_solve_sc_spa',e$sc, x, w, tol, as.integer(maxiter))
-
+   yy <- as.vector(y)
+   names(yy) <- names(constraints)
+   structure(list(
+        sol = yy,
+        accuracy = attr(y,"accuracy"),
+        niter = attr(y,"niter")
+        ),
+        class = "adapt"
+  )
 }
 
-
+#' print method for adapt object
+#'
+#' @keywords internal
+#' @export
+print.adapt <- function(x,...){
+    cat(sprintf("Accuracy  : %g\n",x$accuracy))
+    cat(sprintf("Iterations: %d\n", x$niter))
+    cat("Solution:\n")
+    print(x$sol)
+}
 

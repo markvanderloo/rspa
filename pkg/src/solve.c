@@ -99,11 +99,9 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *
         diff = maxdist(xt, x, n);
         for (int j=0; j<n; xt[j++] = x[j]);
         ++niter;
-      //Rprintf("\ni=%d, diff = %g, alpha:", niter, diff);
-      //for ( int mm=0; mm < m; Rprintf("%g, ",alpha[mm++]));
     }
-    tol[0] = diff;
-    maxiter[0] = niter;
+    *tol = diff;
+    *maxiter = niter;
     free(alpha);
 }
 
