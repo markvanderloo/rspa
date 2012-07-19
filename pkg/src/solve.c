@@ -44,9 +44,9 @@ static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *al
         ax += ak[j] * x[I[j]];
         wa[j] = w[I[j]] * ak[j];
     }
-     alpha[k] = alpha[k] - (E->b[k] - ax)/awa;
+     //alpha[k] = alpha[k] - (E->b[k] - ax)/awa;
       // eqn from paper but wrong by a minus sign.
-    //alpha[k] = alpha[k] + (ax - E->b[k])/awa;
+    alpha[k] = alpha[k] + (ax - E->b[k])/awa;
     alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
     for ( int j=0; j<nrag; j++ ){

@@ -8,7 +8,7 @@ E <- editmatrix(expression(
     x1 - x5 + x8 == 0,
     x5 - x3 - x4 == 0,
     x8 - x6 - x7 == 0
-#    x4 > 0
+    #x4 > 0
 #    x3 > 0,
 #    x5 > 0,
 #    x6 > 0,
@@ -36,7 +36,9 @@ I
 u <- x[I]
 w <- rep(1,length(u))
 
-y <- adapt(e,u,w=1/u,tol=1e-5)
+w = 1/u
+w = w/sum(u)
+y <- adapt(e,u, tol=1e-5)
 y
 xt <-  x;
 xt[I] <- y$sol;
