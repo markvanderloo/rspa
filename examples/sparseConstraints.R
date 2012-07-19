@@ -38,7 +38,7 @@ w <- rep(1,length(u))
 
 w = 1/u
 w = w/sum(u)
-y <- adapt(e,u, tol=1e-5)
+y <- adapt(e,u, w=1/u,tol=1e-5)
 y
 xt <-  x;
 xt[I] <- y$sol;

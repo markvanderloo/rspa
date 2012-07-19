@@ -79,7 +79,7 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *
     int niter = 0;
 
     // we only need w's inverse.
-    for ( int k=0; k < m; w[k++] = 1.0/w[k] );
+    for ( int k=0; k < E->nvar; w[k++] = 1.0/w[k] );
     // determine inner products A'W^(-1)A
     for ( int k=0; k < m; k++){
         awa[k] = 0;
