@@ -17,9 +17,9 @@ adapt <- function(constraints, x,...){
 #' 
 #'
 #' @export
-adapt.sparseConstraints <- function(constraints, x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5, ...){
-
-   y = .Call('R_solve_sc_spa',e$sc, x, w, tol, as.integer(maxiter))
+adapt.sparseConstraints <- function(constraints, x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
+   x0 <- x;
+   y = .Call('R_solve_sc_spa',constraints$sc, x0, w, tol, as.integer(maxiter))
    yy <- as.vector(y)
    names(yy) <- names(constraints)
    structure(list(

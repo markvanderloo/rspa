@@ -11,6 +11,7 @@ E <- editmatrix(expression(
     x1 > 0,
     x3 > 0,
     x5 > 0,
+    x6 > 0,
     x7 > 0,
     x8 > 0
 ))
@@ -26,7 +27,7 @@ fs <- dir("../pkg/R/",full.names=TRUE)
 for ( f in fs ) dmp <- source(f)
 
 e <- sparseConstraints(E)
-print(e,4)
+print(e)
 
 
 I <- match(getVars(E),names(x),nomatch=0)
@@ -35,9 +36,15 @@ u <- x[I]
 w <- rep(1,length(u))
 
 y <- adapt(e,u,tol=1e-5)
-
+y
 xt <-  x;
 xt[I] <- y$sol;
+
+x
+xt
+
+
+q();
 violatedEdits(E,x,tol=1e-4);
 violatedEdits(E,xt,tol=1e-4);
 
@@ -53,14 +60,7 @@ coef <- coef[o]
 b <- getb(E)
 cbind(rowcol,coef)
 
-p <- .Call("R_sc_from_sparse_matrix", 
-    as.integer(rowcol[,1]),
-    as.integer(rowcol[,2]-1),
-    as.double(coef),
-    as.double(b),
-    as.integer(3)
-)
-
-getVars(E)
-.Call("R_print_sc", p,getVars(E), 10L)
+f <- sparseConstraints(rowcol,b,3,base=1,names=getVars(E))
+f
 E
+

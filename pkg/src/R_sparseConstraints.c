@@ -87,7 +87,7 @@ SEXP R_sc_from_sparse_matrix(SEXP rows, SEXP cols, SEXP coef, SEXP b, SEXP neq )
     PROTECT(neq);
 
     SparseConstraints *E;
-Rprintf("length(b)=%d\n",length(b));
+
     E = sc_from_sparse_matrix(
         INTEGER(rows), 
         INTEGER(cols), 

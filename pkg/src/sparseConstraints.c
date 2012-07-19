@@ -42,7 +42,7 @@ SparseConstraints * sc_from_matrix(double *A, double *b, int m, int n, int neq, 
         }
         E->nrag[i] = nrag;
         E->A[i] = (double *) calloc(nrag, sizeof(double));
-        E->index[i] = (unsigned int *) calloc(nrag, sizeof(unsigned int));
+        E->index[i] = (int *) calloc(nrag, sizeof(int));
         for ( int j=0; j<n; j++ ){
             if ( fabs(A[i+m*j]) > tol ){
                 E->index[i][jrag] = j;
@@ -79,7 +79,7 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
             row_nr = rows[row_start];
             row_end = get_row_end(rows, ncoef, row_start);
            
- Rprintf("  irow: %d, row_start: %d, row_end: %d\n",irow,row_start,row_end);
+ //Rprintf("  irow: %d, row_start: %d, row_end: %d\n",irow,row_start,row_end);
 
             E->nrag[irow]    = 1 + row_end - row_start;
             E->index[irow]   = (int *) calloc( E->nrag[irow], sizeof(int));
@@ -95,7 +95,7 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
     } 
     
     E->neq = neq;
-    E->nvar = maxcol;
+    E->nvar = maxcol+1;
 
     return E;
 

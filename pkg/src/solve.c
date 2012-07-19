@@ -22,7 +22,6 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa
     }
     
     fact = (ax - E->b[k])/awa;
-    
 
     for( int j=0; j < nrag; j++ ){
         x[I[j]] = x[I[j]] - wa[j]*fact;
@@ -32,7 +31,7 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa
 
 // update inequalities: alpha and x.
 static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *alpha, double awa, int k){
-    
+   //Rprintf("k = %d\n",k); 
     double *ak = E->A[k];
     int *I = E->index[k];
     int nrag = E->nrag[k];
@@ -45,13 +44,13 @@ static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *al
         ax += ak[j] * x[I[j]];
         wa[j] = w[I[j]] * ak[j];
     }
-     alpha[k] = (ax - E->b[k])/awa - alpha[k];
+     alpha[k] = alpha[k] - (E->b[k] - ax)/awa;
       // eqn from paper but wrong by a minus sign.
     //alpha[k] = alpha[k] + (ax - E->b[k])/awa;
     alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
     for ( int j=0; j<nrag; j++ ){
-        x[I[j]] -= wa[j]*(alpha_old - alpha[k]);
+        x[I[j]] = x[I[j]] -  wa[j]*(alpha_old - alpha[k]);
     }
 
 }

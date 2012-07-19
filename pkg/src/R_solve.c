@@ -20,8 +20,8 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
     int xmaxiter = INTEGER(maxiter)[0];
 
     solve_sc_spa(xp, REAL(x), REAL(w) , &xtol, &xmaxiter); 
-    Rprintf("\niterations: %d\n", xmaxiter); 
-    Rprintf("accuracy  : %g\n", xtol );
+    //Rprintf("\niterations: %d\n", xmaxiter); 
+    //Rprintf("accuracy  : %g\n", xtol );
     
     niter = allocVector(VECSXP,1);
 
