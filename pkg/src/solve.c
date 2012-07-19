@@ -50,7 +50,7 @@ static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *al
     alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
     for ( int j=0; j<nrag; j++ ){
-        x[I[j]] = x[I[j]] -  wa[j]*(alpha_old - alpha[k]);
+        x[I[j]] +=   wa[j]*(alpha_old - alpha[k]);
     }
 
 }
