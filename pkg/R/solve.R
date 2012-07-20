@@ -15,6 +15,7 @@ adapt <- function(constraints, x,...){
 #' @export
 print.adapt <- function(x, maxprint = 10, ...){
     cat("Object of class 'adapt'\n")
+    cat(sprintf("  Status    : %s\n", x$status))
     cat(sprintf("  Accuracy  : %g\n", x$accuracy))
     cat(sprintf("  Iterations: %d\n", x$niter))
     cat(sprintf("  Timing (s): %g\n", x$duration['elapsed']))

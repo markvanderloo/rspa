@@ -95,12 +95,18 @@ make_sc <- function(e){
             as.integer(maxiter)
          )
       )
+      statusLabels = c(
+         "success",
+         "aborted: could not allocate enough memory",
+         "aborted: divergence detected"
+      )
       acc = attr(y,"accuracy")
       nit = attr(y,"nit")
-      attr(y,c("accuracy","nit")) <- NULL
+      status = statusLabels[attr(y,"status")+1]
+      attr(y,c("accuracy","nit","status")) <- NULL
       names(y) <- e$.vars; 
       structure(
-         list(x = y, accuracy = acc, niter = nit, duration=d ),
+         list(x = y, accuracy = acc, niter = nit, duration=d, status=status ),
          class = "adapt"
       )   
    }

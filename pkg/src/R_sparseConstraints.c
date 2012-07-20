@@ -94,6 +94,8 @@ SEXP R_sc_from_matrix(SEXP A, SEXP b, SEXP neq, SEXP tol){
 
     E = sc_from_matrix(REAL(A), REAL(b), m, n, neqs, REAL(tol)[0]);
 
+    if (E == 0) error("%s\n","Could not allocate enough memory");
+
     SEXP ptr = R_MakeExternalPtr(E, R_NilValue, R_NilValue);
     PROTECT(ptr);
     R_RegisterCFinalizerEx(ptr, R_sc_del, TRUE);
