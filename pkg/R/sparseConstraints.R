@@ -28,11 +28,12 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 
 
 #'
+#' @param b Constant vector
 #' @param neq The first \code{new} equations are interpreted as equality constraints, the rest as '<='
 #' @param base are the indices in \code{x[,1:2]} base 0 or base 1?
 #' @export
 #' @rdname sparseConstraints
-sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2])){
+sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), ...){
    if (length(b) != length(unique(x[,1]))){
       stop("length of b unequal to number of constraints")
    }
@@ -45,8 +46,8 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2])){
       as.integer(x[,2]-base),
       as.double(x[,3]), 
       as.double(b),
-      as.integer(neq)
-#      PACKAGE="rspa"
+      as.integer(neq),
+      PACKAGE="rspa"
    )
    make_sc(e)
 
@@ -73,7 +74,7 @@ make_sc <- function(e){
    }
    
    e$nvar <- function(){
-      .Call("R_get_nvar", e$.sc)#, PACKAGE="rspa")
+      .Call("R_get_nvar", e$.sc, PACKAGE="rspa")
    }
 
    e$nconstr <- function(){
@@ -86,14 +87,14 @@ make_sc <- function(e){
 
    e$print <- function(range){
       if ( missing(range) & e$nvar() > 10 ) range = numeric(0)
-
+      if ( missing(range) & e$nvar() <=10 ) range = 1L:10L
       vars = e$getVars()
       if ( is.null(vars) ) vars = character(0);
 
       stopifnot(all(range >= 1))
       range = range-1;
 
-      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range) )#, PACKAGE="rspa")
+      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range),  PACKAGE="rspa")
    }
  
    # adapt input vector minimally to meet restrictions.
@@ -104,8 +105,8 @@ make_sc <- function(e){
             as.double(x), 
             as.double(w), 
             as.double(tol), 
-            as.integer(maxiter)
-            #PACKAGE="rspa"
+            as.integer(maxiter),
+            PACKAGE="rspa"
          )
       )
       statusLabels = c(
@@ -115,7 +116,6 @@ make_sc <- function(e){
       )
       acc = attr(y,"accuracy")
       nit = attr(y,"nit")
-      print(y)
       status = statusLabels[attr(y,"status")+1]
       attr(y,c("accuracy","nit","status")) <- NULL
       names(y) <- e$.vars; 

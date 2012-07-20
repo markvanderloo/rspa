@@ -31,6 +31,7 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa
 // update inequalities: alpha and x.
 static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *alpha, double awa, int k){
 
+
     double *ak = E->A[k];
     int *I = E->index[k];
     int nrag = E->nrag[k];
@@ -81,39 +82,37 @@ static double maxdist(double *x, double *y, int n){
  *  2 divergence detected; aborted
  */
 #include <R.h>
+#include <Rdefines.h>
 int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
 
-for ( int i=E->nconstraints-1; i>E->nconstraints - 8; --i){
-   Rprintf("nrag %d\n",E->nrag[i]);
-}
+   int m = E->nconstraints;
+   int n = E->nvar;
+   int neq = E->neq;
 
-    int m = E->nconstraints;
-    int n = E->nvar;
-    int neq = E->neq;
+   int nrag;
+   int niter = 0;
+   double *awa = (double *) calloc(m, sizeof(double));
+   double *xt = (double *) calloc(n, sizeof(double));     
+   double *xw = (double *) calloc(n, sizeof(double));
+   double *alpha = (double *) calloc(m, sizeof(double));
 
-    int nrag;
-    int niter = 0;
-    double awa[m];
-    double xt[n];    
-    double xw[n];
-    double alpha[m]; 
+   // todo: cleanup in case of emergency...
+   if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 ) return 1;
 
-    if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 ) return(1);
+   double diff = DBL_MAX, diff0 = 0;
+   int exit_status = 0;
+   // we only need w's inverse.
+   for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
+   // determine inner products A'W^(-1)A
+   for ( int k=0; k < m; k++){
+      awa[k] = 0;
+      nrag = E->nrag[k];
+      for ( int j=0; j<nrag; j++){
+         awa[k] += E->A[k][j] * xw[E->index[k][j]] * E->A[k][j];
+      }
+   }
 
-    double diff = DBL_MAX, diff0 = 0;
-    int exit_status = 0;
-    // we only need w's inverse.
-    for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
-    // determine inner products A'W^(-1)A
-    for ( int k=0; k < m; k++){
-        awa[k] = 0;
-        nrag = E->nrag[k];
-        for ( int j=0; j<nrag; j++){
-            awa[k] += E->A[k][j] * xw[E->index[k][j]] * E->A[k][j];
-        }
-    }
-
-    for ( int i=0; i<n; xt[i++]=x[i] );
+   for ( int i=0; i<n; xt[i++]=x[i] );
 
    while ( diff > tol[0] && niter < maxiter[0] ){
   
@@ -130,8 +129,11 @@ for ( int i=E->nconstraints-1; i>E->nconstraints - 8; --i){
    }
    *tol = diff;
    *maxiter = niter;
-    
-    return exit_status;
+   free(awa);
+   free(xt);
+   free(xw);
+   free(alpha);
+   return exit_status;
 }
 
 
