@@ -5,7 +5,6 @@
 #include "sparseConstraints.h"
 #include "spa.h"
 
-#include <R.h>
 // update equalities
 static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa, int k){
     
@@ -81,11 +80,17 @@ static double maxdist(double *x, double *y, int n){
  *  1 memory allocation error; aborted
  *  2 divergence detected; aborted
  */
+#include <R.h>
 int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
-    
+
+for ( int i=E->nconstraints-1; i>E->nconstraints - 8; --i){
+   Rprintf("nrag %d\n",E->nrag[i]);
+}
+
     int m = E->nconstraints;
     int n = E->nvar;
     int neq = E->neq;
+
     int nrag;
     int niter = 0;
     double awa[m];
@@ -96,8 +101,7 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
     if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 ) return(1);
 
     double diff = DBL_MAX, diff0 = 0;
-    int exit_status=0;
-
+    int exit_status = 0;
     // we only need w's inverse.
     for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
     // determine inner products A'W^(-1)A
@@ -111,20 +115,21 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
 
     for ( int i=0; i<n; xt[i++]=x[i] );
 
-    while ( diff > tol[0] && niter < maxiter[0] ){
-        diff0 = diff;
-        for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, awa[k], k);
-        for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, alpha, awa[k], k);
-        diff = maxdist(xt, x, n);
-        for (int j=0; j<n; xt[j++] = x[j]);
-        ++niter;
-        if (diff > diff0){ 
-           exit_status = 2;
-           break;
-        }
-    }
-    *tol = diff;
-    *maxiter = niter;
+   while ( diff > tol[0] && niter < maxiter[0] ){
+  
+      diff0 = diff;
+      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, awa[k], k);
+      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, alpha, awa[k], k);
+      diff = maxdist(xt, x, n);
+      for (int j=0; j<n; xt[j++] = x[j]);
+      ++niter;
+      if (diff > diff0){ 
+         exit_status = 2;
+         break;
+      }
+   }
+   *tol = diff;
+   *maxiter = niter;
     
     return exit_status;
 }

@@ -18,7 +18,7 @@ void R_sc_del(SEXP p){
 static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
    char *op;
    int n = x->nrag[i]-1;
-   double b;
+   double b = x-> b[i];
    op = i < x->neq ? "= " : "<=";
 
    char varname[252];

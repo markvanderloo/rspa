@@ -22,10 +22,10 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
    int s;
    double xx[length(x)];
    for ( int i=0; i<length(x); xx[i++] = REAL(x)[i]);
-  
+Rprintf("foo\n");  
    // solve
    s = solve_sc_spa(xp, REAL(w) , &xtol, &xmaxiter, xx); 
-    
+Rprintf("bar\n");    
    // copy answers back into R
    SEXP out = allocVector(REALSXP, length(x));
    for (int i=0; i<length(x); REAL(out)[i++] = xx[i]); 

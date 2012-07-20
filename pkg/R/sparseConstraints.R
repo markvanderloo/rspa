@@ -100,7 +100,8 @@ make_sc <- function(e){
    e$adapt <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
       d <- system.time( 
          y <- .Call('R_solve_sc_spa',
-            e$.sc, as.double(x), 
+            e$.sc, 
+            as.double(x), 
             as.double(w), 
             as.double(tol), 
             as.integer(maxiter)
