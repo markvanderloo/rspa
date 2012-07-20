@@ -4,6 +4,7 @@
 
 #include <R.h>
 #include <Rdefines.h>
+
 #include "R_sparseConstraints.h"
 #include "sparseConstraints.h"
 
@@ -15,18 +16,33 @@ void R_sc_del(SEXP p){
 
 
 static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
-    char op;
-    int n = x->nrag[i]-1;
-    double b;
-    op = i < x->neq ? '=' : '<';
+   char *op;
+   int n = x->nrag[i]-1;
+   double b;
+   op = i < x->neq ? "= " : "<=";
 
-    Rprintf("%3d : ",i+1);
-    for (int j=0; j < n; j++){
-        Rprintf("%g*%s + ", x->A[i][j], CHAR(STRING_ELT(names,x->index[i][j])) );
-    }
-    // prevent -0 printing
-    b = b == 0.0 ? 0.0 : b;    
-    Rprintf("%g*%s %.1s %g\n",x->A[i][n], CHAR(STRING_ELT(names,x->index[i][n])), &op , b);
+   char varname[252];
+
+   int hasnames = length(names) == 0 ? 0 : 1;
+
+   Rprintf("%3d : ",i+1);
+   for (int j=0; j < n; j++){
+      if ( hasnames ){ // get varname from 'names'
+         sprintf( varname, "%s",CHAR(STRING_ELT(names,x->index[i][j])) );
+      } else {  // make surrogate varnames
+         sprintf( varname, "X%d",x->index[i][j] );
+      }
+         
+      Rprintf("%g*%s + ", x->A[i][j], varname );
+   }
+   // prevent -0 printing
+   b = b == 0.0 ? 0.0 : b;    
+  if ( hasnames ){ // get varname from 'names'
+     sprintf( varname, "%s",CHAR(STRING_ELT(names,x->index[i][n])) );
+  } else {  // make surrogate varnames
+     sprintf( varname, "X%d",x->index[i][n] );
+  }
+   Rprintf("%g*%s %.1s %g\n",x->A[i][n], varname, op , b);
 
 }
 
@@ -42,8 +58,10 @@ SEXP R_print_sc(SEXP p, SEXP names, SEXP printrange){
         return R_NilValue;
     }
 
-   
+     
     for ( int i=0; i<npr; nn += pr[i++] >= xp->nconstraints ? 0 : 1);
+
+    
     Rprintf("Sparse numerical constraints.\n");
     Rprintf("  Variables   : %d\n",xp->nvar);
     Rprintf("  Restrictions: %d (printing %d)\n",xp->nconstraints, nn);
