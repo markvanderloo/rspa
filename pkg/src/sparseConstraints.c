@@ -8,18 +8,18 @@ SparseConstraints * sc_new( int m ){
     
     SparseConstraints *E;
     E = (SparseConstraints *) calloc(1, sizeof(SparseConstraints));
-    E->nedits = m;
-    E->A = (double **) calloc(E->nedits, sizeof(double *));
-    E->index = (int **) calloc(E->nedits, sizeof(int *));
-    E->nrag = (int *) calloc(E->nedits, sizeof(int));
-    E->b = (double *) calloc(E->nedits, sizeof(double));
+    E->nconstraints = m;
+    E->A = (double **) calloc(E->nconstraints, sizeof(double *));
+    E->index = (int **) calloc(E->nconstraints, sizeof(int *));
+    E->nrag = (int *) calloc(E->nconstraints, sizeof(int));
+    E->b = (double *) calloc(E->nconstraints, sizeof(double));
     return E;
 }
 
 void sc_del(SparseConstraints *E){
     free(E->b);
     free(E->nrag);
-    for ( int i = 0; i < E->nedits; i++){
+    for ( int i = 0; i < E->nconstraints; i++){
         free(E->A[i]);
         free(E->index[i]);
     } 
@@ -33,7 +33,7 @@ SparseConstraints * sc_from_matrix(double *A, double *b, int m, int n, int neq, 
     SparseConstraints *E = sc_new(m);
     E->neq = neq;
     E->nvar = n;
-    for ( int i=0; i < E->nedits; i++){
+    for ( int i=0; i < E->nconstraints; i++){
         E->b[i] = b[i];
         nrag=0;
         jrag=0;      

@@ -8,37 +8,19 @@ adapt <- function(constraints, x,...){
 
 }
 
-#' Solve quadratic programming problem
-#'
-#' @param sc constraints in \link{\code{sparseConstraints}} format
-#' @param x original values
-#; @param w weights
-#' @param tol accuracy: max(solution - x)
-#' 
-#'
-#' @export
-adapt.sparseConstraints <- function(constraints, x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
-   x0 <- x;
-   y = .Call('R_solve_sc_spa',constraints$sc, x0, w, tol, as.integer(maxiter))
-   yy <- as.vector(y)
-   names(yy) <- names(constraints)
-   structure(list(
-        sol = yy,
-        accuracy = attr(y,"accuracy"),
-        niter = attr(y,"niter")
-        ),
-        class = "adapt"
-  )
-}
 
 #' print method for adapt object
 #'
 #' @keywords internal
 #' @export
-print.adapt <- function(x,...){
-    cat(sprintf("Accuracy  : %g\n",x$accuracy))
-    cat(sprintf("Iterations: %d\n", x$niter))
-    cat("Solution:\n")
-    print(x$sol)
+print.adapt <- function(x, maxprint = 10, ...){
+    cat("Object of class 'adapt'\n")
+    cat(sprintf("  Accuracy  : %g\n", x$accuracy))
+    cat(sprintf("  Iterations: %d\n", x$niter))
+    cat(sprintf("  Timing (s): %g\n", x$duration['elapsed']))
+    tr = ":";
+    if (length(x$x) > 10) tr = sprintf(" (truncated at %d):",maxprint)
+    cat(paste("Solution",tr,"\n",sep=""))
+    print(x$x[1:min(length(x$x),maxprint)])
 }
 

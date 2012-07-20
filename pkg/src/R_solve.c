@@ -15,17 +15,16 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
     PROTECT(maxiter);
 
     SEXP niter, eps;
-
+    
+    // make copies to prevent writing in userspace.
     double xtol = REAL(tol)[0];
     int xmaxiter = INTEGER(maxiter)[0];
-
-    solve_sc_spa(xp, REAL(x), REAL(w) , &xtol, &xmaxiter); 
-    //Rprintf("\niterations: %d\n", xmaxiter); 
-    //Rprintf("accuracy  : %g\n", xtol );
+    double xx[length(x)];
+    for ( int i=0; i<length(x); xx[i++] = REAL(x)[i]);
+  
+    solve_sc_spa(xp, REAL(w) , &xtol, &xmaxiter, xx); 
     
-    niter = allocVector(VECSXP,1);
-
-
+//    niter = allocVector(VECSXP,1);
     PROTECT(niter = allocVector(INTSXP,1));
     PROTECT(eps = allocVector(REALSXP,1));
     INTEGER(niter)[0] = xmaxiter;

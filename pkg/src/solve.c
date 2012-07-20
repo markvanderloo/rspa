@@ -67,9 +67,9 @@ static double maxdist(double *x, double *y, int n){
 }
 
 // successive projection algorithm
-void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *maxiter ){
+void solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
     
-    int m = E->nedits;
+    int m = E->nconstraints;
     int n = E->nvar;
     int neq = E->neq;
     double awa[m];
@@ -79,13 +79,14 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *
     int niter = 0;
 
     // we only need w's inverse.
-    for ( int k=0; k < E->nvar; w[k++] = 1.0/w[k] );
+    double xw[n];
+    for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
     // determine inner products A'W^(-1)A
     for ( int k=0; k < m; k++){
         awa[k] = 0;
         nrag = E->nrag[k];
         for ( int j=0; j<nrag; j++){
-            awa[k] += E->A[k][j] * w[E->index[k][j]] * E->A[k][j];
+            awa[k] += E->A[k][j] * xw[E->index[k][j]] * E->A[k][j];
         }
     }
 
@@ -93,8 +94,8 @@ void solve_sc_spa(SparseConstraints *E, double *x, double *w, double *tol, int *
     double diff = DBL_MAX;
     
     while ( diff > tol[0] && niter < maxiter[0] ){
-        for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, w, awa[k], k);
-        for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, w, alpha, awa[k], k);
+        for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, awa[k], k);
+        for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, alpha, awa[k], k);
         diff = maxdist(xt, x, n);
         for (int j=0; j<n; xt[j++] = x[j]);
         ++niter;

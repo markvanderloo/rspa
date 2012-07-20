@@ -6,7 +6,7 @@
 // We use a ragged adday for sparse storage of numerical edit sets.
 typedef struct _SparseConstraints {
     // number of edits
-    int nedits;
+    int nconstraints;
     // the first neqs represent equations ax=b, the others inequations ax < b
     int neq;
     // number of variables

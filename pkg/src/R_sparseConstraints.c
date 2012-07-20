@@ -20,6 +20,7 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
     double b;
     op = i < x->neq ? '=' : '<';
 
+    Rprintf("%3d : ",i+1);
     for (int j=0; j < n; j++){
         Rprintf("%g*%s + ", x->A[i][j], CHAR(STRING_ELT(names,x->index[i][j])) );
     }
@@ -29,28 +30,52 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
 
 }
 
-SEXP R_print_sc(SEXP p, SEXP names, SEXP maxprint){
+SEXP R_print_sc(SEXP p, SEXP names, SEXP printrange){
     PROTECT(p);
     PROTECT(names);
-    PROTECT(maxprint);
-    int mp = INTEGER(maxprint)[0];
+    PROTECT(printrange);
+    int *pr = INTEGER(printrange);
+    int nn=0, npr = length(printrange);
     SparseConstraints * xp = R_ExternalPtrAddr(p);
     if (!xp){
         Rprintf("NULL pointer\n");
         return R_NilValue;
     }
 
-    mp = mp < xp->nedits ? mp : xp->nedits;
+   
+    for ( int i=0; i<npr; nn += pr[i++] >= xp->nconstraints ? 0 : 1);
     Rprintf("Sparse numerical constraints.\n");
     Rprintf("  Variables   : %d\n",xp->nvar);
-    Rprintf("  Restrictions: %d (printing %d)\n",xp->nedits, mp);
+    Rprintf("  Restrictions: %d (printing %d)\n",xp->nconstraints, nn);
 
-
-    for ( int i =0; i < mp; i++){
-       R_print_sc_row(xp, i, names); 
+    
+    for ( int i =0; i < npr; i++){
+       if ( pr[i] >= xp->nconstraints ) continue;
+       R_print_sc_row(xp, pr[i], names); 
     }
     UNPROTECT(3);
     return R_NilValue;
+}
+
+
+SEXP R_get_nvar(SEXP p){
+   PROTECT(p);
+   SparseConstraints *xp = R_ExternalPtrAddr(p);
+   SEXP out = allocVector(VECSXP,1);
+   PROTECT(out = allocVector(INTSXP,1));
+   INTEGER(out)[0] = xp->nvar;
+   UNPROTECT(2);
+   return out;
+}
+
+SEXP R_get_nconstraints(SEXP p){
+   PROTECT(p);
+   SparseConstraints *xp = R_ExternalPtrAddr(p);
+   SEXP out = allocVector(VECSXP,1);
+   PROTECT(out = allocVector(INTSXP,1));
+   INTEGER(out)[0] = xp->nconstraints;
+   UNPROTECT(2);
+   return out;
 }
 
 
