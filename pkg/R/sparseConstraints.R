@@ -2,25 +2,28 @@
 #' generate sparse restriction set
 #'
 #' @param x R object to be translated to sparseConstraints format.
-#'
+#' @param ... options to be passed to other methods
+#' @export
+#' @example ../examples/sparseConstraints.R
 sparseConstraints = function(x, ...){
     UseMethod("sparseConstraints")
 }
 
 
-#' Sparse numeric edits from {\sf editmatrix} object
+#' Sparse numeric edits from \code{editmatrix} object
 #'
 #' @param tol Tolerance for testing where coefficients are zero
-#'
+#' @rdname sparseConstraints
+#' @export
 sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
     require(editrules)
 
-    ieq <- getOps(E) == '=='
+    ieq <- getOps(x) == '=='
     I <- c(which(ieq),which(!ieq))
     x <- x[I,];
     e <- new.env();
-    e$.sc <- .Call("R_sc_from_matrix", getA(x), getb(x), sum(ieq), tol)
-    e$.vars <- getVars(E)
+    e$.sc <- .Call("R_sc_from_matrix", getA(x), getb(x), sum(ieq), tol, PACKAGE="rspa")
+    e$.vars <- getVars(x)
     make_sc(e)
 }
 
@@ -28,7 +31,9 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 #'
 #' @param base do the row and column indices start at 1 (R-style) or at 0?
 #' @param b constant vector
+#' @param neq number of equalities 
 #' @param names optional vector with variable names.
+#'
 #' @rdname sparseConstraints
 #' @export
 sparseConstraints.matrix = function(x, b, neq, base=min(x[,2]), names, ...){
@@ -40,16 +45,24 @@ sparseConstraints.matrix = function(x, b, neq, base=min(x[,2]), names, ...){
     }
     e <- new.env()
     e$.sc <- .Call("R_sc_from_sparse_matrix", 
-        as.integer(rowcol[,1]), 
-        as.integer(rowcol[,2]-base),
+        as.integer(x[,1]), 
+        as.integer(x[,2]-base),
         as.double(coef), 
         as.double(b),
-        as.integer(3)
+        as.integer(3),
+        PACKAGE="rspa"
     )
     
     make_sc(e) 
 }
 
+
+#' print method for sparse constraints object
+#' 
+#' @param range integer vector stating which constraints to print
+#'
+#' @export
+#' @rdname sparseConstraints
 print.sparseConstraints <- function(x, range=1L:10L, ...){
    x$print()
 }
@@ -62,11 +75,11 @@ make_sc <- function(e){
    }
    
    e$nvar <- function(){
-      .Call("R_get_nvar",e$.sc)
+      .Call("R_get_nvar", e$.sc, PACKAGE="rspa")
    }
 
    e$nconstr <- function(){
-      .Call("R_get_nconstraints",e$.sc)
+      .Call("R_get_nconstraints", e$.sc, PACKAGE="rspa")
    }
    
    e$getVars <- function(){
@@ -82,7 +95,7 @@ make_sc <- function(e){
       } else {
          vars = e$.vars
       }
-      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range))
+      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range), PACKAGE="rspa")
    }
  
    # adapt input vector minimally to meet restrictions.
@@ -92,7 +105,8 @@ make_sc <- function(e){
             e$.sc, as.double(x), 
             as.double(w), 
             as.double(tol), 
-            as.integer(maxiter)
+            as.integer(maxiter),
+            PACKAGE="rspa"
          )
       )
       statusLabels = c(
@@ -102,6 +116,7 @@ make_sc <- function(e){
       )
       acc = attr(y,"accuracy")
       nit = attr(y,"nit")
+      print(y)
       status = statusLabels[attr(y,"status")+1]
       attr(y,c("accuracy","nit","status")) <- NULL
       names(y) <- e$.vars; 

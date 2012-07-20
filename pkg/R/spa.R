@@ -1,17 +1,19 @@
-#' adapt
+#' adapt a vector minimally to obey constraints.
 #' 
 #' @param constraints linear (in)equality constraints on \code{x}
 #' @param x numeric vector
+#' @param ... arguments to be passed to other methods
 #' @export
 adapt <- function(constraints, x,...){
    UseMethod('adapt')
-
 }
 
 
 #' print method for adapt object
 #'
-#' @keywords internal
+#' @param maxprint max number of output values to print
+#' 
+#' @rdname adapt
 #' @export
 print.adapt <- function(x, maxprint = 10, ...){
     cat("Object of class 'adapt'\n")

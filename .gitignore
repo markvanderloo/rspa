@@ -4,5 +4,10 @@
 # temporary vim files
 *.swp
 
+pkg/DESCRIPTION
+pkg/NAMESPACE
 
+# ignored directories
+output/
+pkg/man/
 

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <float.h>
 #include "sparseConstraints.h"
-#include "solve.h"
+#include "spa.h"
 
 #include <R.h>
 // update equalities

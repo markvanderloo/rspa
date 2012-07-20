@@ -2,7 +2,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include "sparseConstraints.h"
-#include "solve.h"
+#include "spa.h"
 
 
 SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){

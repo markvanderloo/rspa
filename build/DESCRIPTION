@@ -1,5 +1,5 @@
-Package: spa
-Maintainer: Mark van der Loo
+Package: rspa
+Maintainer: Mark van der Loo <mark.vanderloo@gmail.com>
 License: GPL-3
 Title: Adapt numerical records to fit (in)equality restrictions with the Successive Projection Algorithm
 LazyData: no
