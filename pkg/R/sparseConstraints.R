@@ -15,15 +15,17 @@ sparseConstraints = function(x, ...){
 #' @rdname sparseConstraints
 #' @export
 sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
-    require(editrules)
+   if (!isNormalized(x)) normalize(x)
 
-    ieq <- getOps(x) == '=='
-    I <- c(which(ieq),which(!ieq))
-    x <- x[I,];
-    e <- new.env();
-    e$.sc <- .Call("R_sc_from_matrix", getA(x), getb(x), sum(ieq), tol, PACKAGE="rspa")
-    e$.vars <- getVars(x)
-    make_sc(e)
+   ieq <- getOps(x) == '=='
+   I <- c(which(ieq),which(!ieq))
+   x <- x[I,];
+   e <- new.env();
+   A <- getA(x);
+   storage.mode(A) <- "double"
+   e$.sc <- .Call("R_sc_from_matrix", A, as.double(getb(x)), as.integer(sum(ieq)), as.double(tol), PACKAGE="rspa")
+   e$.vars <- getVars(x)
+   make_sc(e)
 }
 
 
@@ -115,15 +117,23 @@ make_sc <- function(e){
          "aborted: divergence detected"
       )
       acc = attr(y,"accuracy")
-      nit = attr(y,"nit")
+      nit = attr(y,"niter")
       status = statusLabels[attr(y,"status")+1]
-      attr(y,c("accuracy","nit","status")) <- NULL
+      attr(y,"accuracy") <- NULL
+      attr(y,"niter")    <- NULL
+      attr(y,"status")   <- NULL
       names(y) <- e$.vars; 
       structure(
          list(x = y, accuracy = acc, niter = nit, duration=d, status=status ),
          class = "adapt"
       )   
    }
+
+   e$diffsum <- function(x){
+      stopifnot(length(x)==e$nvar())
+      .Call("R_sc_diffsum", e$.sc, as.double(x), PACKAGE="rspa") 
+   }
+
    structure(e,class="sparseConstraints")
 }
 

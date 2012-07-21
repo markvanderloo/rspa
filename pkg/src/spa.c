@@ -1,9 +1,10 @@
 
-
+#include <stdlib.h>
 #include <math.h>
 #include <float.h>
 #include "sparseConstraints.h"
 #include "spa.h"
+#include "sc_arith.h"
 
 // update equalities
 static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa, int k){
@@ -81,8 +82,6 @@ static double maxdist(double *x, double *y, int n){
  *  1 memory allocation error; aborted
  *  2 divergence detected; aborted
  */
-#include <R.h>
-#include <Rdefines.h>
 int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
 
    int m = E->nconstraints;
@@ -120,9 +119,10 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
       for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, awa[k], k);
       for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, alpha, awa[k], k);
       diff = maxdist(xt, x, n);
+      // diff = sc_diffsum(E, x);
       for (int j=0; j<n; xt[j++] = x[j]);
       ++niter;
-      if (diff > diff0){ 
+      if (diff > diff0){ // divergence: no joy at all.
          exit_status = 2;
          break;
       }

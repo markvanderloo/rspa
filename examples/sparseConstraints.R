@@ -1,5 +1,5 @@
 
-
+library(rspa)
 ### example of Pannekoek and Chun (2012)
 # define constraints ('edits'):
 E <- editmatrix(expression(
@@ -22,6 +22,7 @@ e$print(c(2,4)) # <- print limited range
 e$getVars()     # <- number of variables
 e$nconstr()     # <- number of constraints
 
+
 ### adapt a vector x to meet conditions 
 # 
 
@@ -30,8 +31,11 @@ I <- match(e$getVars(), names(x))
 
 u <- x[I]
 
+e$diffsum(u)
 y <- e$adapt(u, tol=1e-5)
 y
+# check the answer
+e$diffsum(y$x)
 
 ## assemble the answer 
 xt <-  x;
