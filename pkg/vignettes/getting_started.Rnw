@@ -1,0 +1,95 @@
+\documentclass[a4paper, 11pt, fleqn]{article}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+% tussenvoegsel hack.
+\DeclareRobustCommand{\VAN}[3]{#2}
+
+
+\title{Getting started with {\sf rspa}\\
+  {\small Package version \Sexpr{packageVersion("rspa")}}
+}
+\author{Mark van der Loo}
+\date{\today}
+
+
+
+
+\begin{document}
+<<include=FALSE >>=
+library(rspa)
+library(editrules)
+@
+\maketitle
+
+\begin{abstract}
+This package offers functionality to minimally adjust a vector $\bs{x}$
+such that after adaptation, it obeys the system $\bs{Ax}\leq \bs{b}$.
+The package implements the the successive projection algorithm
+of \cite{pannekoek:2012}. The are are several ways to define what ``minimal'' 
+means here, and the package allows for fairly large systems of equations.
+Thus far it has been tested on systems with on the order of $10^5-10^6$
+variables and $10^4-10^5$ restrictions. Convergence is usually reached within
+seconds.
+\end{abstract}
+
+\section{A simple example}
+The following example is borrowed from \cite{pannekoek:2012} and involves
+profit-loss account balances from a business survey. The problem described in
+the reference involves a record of eight variables $x_1\ldots x_8$ that have
+to obey the following rules.
+%
+\begin{eqnarray*}
+x_1 &=& x_5 + x_8\\
+x_5 &=& x_3 + x_4\\
+x_8 &=& x_6 + x_7\\
+x_j &\geq& 0 \textrm{ for all }j.
+\end{eqnarray*}
+%
+The first task is to define these constraints in {\sf R}. The {\sf rspa}
+package offers several ways for this, but for this problem it is convenient to
+make use of the {\sf editrules} package \citep{jonge:2011} to define the
+constraints.
+%
+<<tidy=FALSE>>=
+E <- editmatrix(expression(
+    x5 + x8 == x1,
+    x3 + x4 == x5,
+    x6 + x7 == x8,
+    x4 > 0
+))
+@
+
+
+The record in the example has the following values
+<<tidy=FALSE>>=
+x <- c(
+   x1=330,
+   x2=20,
+   x3=1000,
+   x4=30,
+   x5=950,
+   x6=500,
+   x7=200,
+   x8=700)
+@
+
+
+
+
+\section{Adapting a set of records in a {\sf data.frame}}
+
+
+\section{Treating large problems}
+
+\bibliographystyle{chicago}
+\DeclareRobustCommand{\VAN}[3]{#3}
+\bibliography{rspa}
+
+\end{document}
+
+
+
