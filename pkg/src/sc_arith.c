@@ -15,7 +15,7 @@ double sc_row_vec(SparseConstraints *E, int i, double *x){
 }
 
 // multiply constraints with vector
-void sc_vec(SparseConstraints *E, double *x, double *Ax){
+void sc_multvec(SparseConstraints *E, double *x, double *Ax){
    for ( int i=0; i<E->nconstraints; i++){
       Ax[i] = sc_row_vec(E, i, x);
    }
@@ -23,8 +23,8 @@ void sc_vec(SparseConstraints *E, double *x, double *Ax){
 
 
 // compute difference vector Ax - b
-void sc_diff(SparseConstraints *E, double *x, double *diff){
-   sc_vec(E,x,diff);
+void sc_diffvec(SparseConstraints *E, double *x, double *diff){
+   sc_multvec(E,x,diff);
    for ( int i=0; i<E->nconstraints; diff[i++] -= E->b[i]);
 }
 

@@ -8,11 +8,11 @@ double sc_row_vec(SparseConstraints *E, int i, double *x);
 
 
 // multiply constraints with vector
-void sc_vec(SparseConstraints *E, double *x, double *Ax);
+void sc_multvec(SparseConstraints *E, double *x, double *Ax);
 
 
 // compute difference vector Ax - b
-void sc_diff(SparseConstraints *E, double *x, double *diff);
+void sc_diffvec(SparseConstraints *E, double *x, double *diff);
 
 /* Compute sum  sum(|Ax-b|) for equations.
  * For inequations, if diff_i = a_i.x - b < 0 then diff_i = 0
@@ -25,5 +25,4 @@ double sc_diffsum(SparseConstraints *E, double *x);
 
 
 #endif
-
 
