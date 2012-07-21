@@ -50,5 +50,19 @@ SEXP R_sc_diffsum(SEXP p, SEXP x){
 
 }
 
+SEXP R_sc_substvalue(SEXP p, SEXP col, SEXP val){
+   PROTECT(p);
+   PROTECT(col);
+   PROTECT(val);
 
+   SparseConstraints *xp = R_ExternalPtrAddr(p);
+   SEXP nsub = allocVector(INTSXP,1);
+   PROTECT(nsub);
+
+   INTEGER(nsub)[0] = sc_substvalue(xp, INTEGER(col)[0], REAL(val)[0]);
+
+   UNPROTECT(4);
+
+   return nsub;
+}
 

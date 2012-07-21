@@ -144,6 +144,18 @@ make_sc <- function(e){
       .Call("R_sc_diffvec", e$.sc, as.double(x), PACKAGE="rspa")
    }
 
+   e$substValue <- function(var, value, base = 1){
+      if (!is.numeric(var)){
+         var = which(var == e$getVars())
+         if (length(var) != 1) stop("aborting: variable did not match any name in object")
+         var = var - 1;
+      } else {
+         stopifnot(var-base > 0)
+         var = var-base;
+      }
+      nsub = .Call("R_sc_substvalue", e$.sc, as.integer(var), as.double(value))
+      return(c(substitutions = nsub))
+   }
    structure(e,class="sparseConstraints")
 }
 

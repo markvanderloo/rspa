@@ -1,6 +1,7 @@
 
-#include "sparseConstraints.h"
+#include <stdlib.h>
 #include <math.h>
+#include "sparseConstraints.h"
 #include "sc_arith.h"
 
 // multiply row of constraints with vector
@@ -44,6 +45,35 @@ double sc_diffsum(SparseConstraints *E, double *x){
    }
    
    return d;
+}
+
+// replace coefficient with zero if it matches a variable.
+static int sc_subinrow(SparseConstraints *E,int row, int col, double val){
+
+   for ( int j=0; j<E->nrag[row]; j++){ 
+      if ( E->index[row][j] == col ){
+         E->b[row] -= E->A[row][j] * val;
+         E->A[row][j] = 0;
+         return 1;
+      }
+   }
+   return 0;
+}
+
+// 
+int sc_substvalue(SparseConstraints *E, int col, double val){
+   
+   int nsub = 0;
+   for ( int i=0; i<E->nconstraints; i++){
+      nsub += sc_subinrow(E, i, col, val);
+   }
+
+   if ( nsub > 0 ){
+      E->nvar -= 1;
+   }
+
+   return nsub;
+
 }
 
 

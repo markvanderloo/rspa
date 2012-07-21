@@ -22,7 +22,11 @@ void sc_diffvec(SparseConstraints *E, double *x, double *diff);
  */
 double sc_diffsum(SparseConstraints *E, double *x);
 
-
+// substitute a value for one of the variables. 
+// returns the number of substitutions.
+// This just does A[,i] = 0 and b  = b-A[,i]*val
+// Empty rows are not removed.
+int sc_substvalue(SparseConstraints *, int, double );
 
 #endif
 
