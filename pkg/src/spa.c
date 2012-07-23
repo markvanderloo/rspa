@@ -5,14 +5,14 @@
 #include "sparseConstraints.h"
 #include "spa.h"
 #include "sc_arith.h"
+#include "maxdist.h"
 
 // update equalities
-static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa, int k){
+static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double *wa, double awa, int k){
     
     double *ak = E->A[k];
     int *I = E->index[k];
     int nrag = E->nrag[k];
-    double wa[nrag];
     double fact;
 
     double ax = 0;
@@ -26,46 +26,34 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double awa
     for( int j=0; j < nrag; j++ ){
         x[I[j]] = x[I[j]] - wa[j]*fact;
     }
-
 }
 
 // update inequalities: alpha and x.
-static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *alpha, double awa, int k){
+static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa, double *alpha, double awa, int k){
+
+   double *ak = E->A[k];
+   int *I = E->index[k];
+   int nrag = E->nrag[k];
+   
+   double alpha_old = alpha[k];
+   double ax=0;
+
+   for ( int j=0; j<nrag; j++){
+      ax += ak[j] * x[I[j]];
+      wa[j] = w[I[j]] * ak[j];
+   }
 
 
-    double *ak = E->A[k];
-    int *I = E->index[k];
-    int nrag = E->nrag[k];
-    double wa[nrag];
+   alpha[k] = alpha[k] + (ax - E->b[k])/awa;
+   alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
-    double alpha_old = alpha[k];
-    double ax=0;
-
-    for ( int j=0; j<nrag; j++){
-        ax += ak[j] * x[I[j]];
-        wa[j] = w[I[j]] * ak[j];
-    }
-
-
-    alpha[k] = alpha[k] + (ax - E->b[k])/awa;
-    alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
-    
-    for ( int j=0; j<nrag; j++ ){
-        x[I[j]] +=   wa[j]*(alpha_old - alpha[k]);
-    }
+   double alphadiff = alpha_old - alpha[k];
+   for ( int j=0; j<nrag; j++ ){
+      x[I[j]] +=   wa[j]*alphadiff;
+   }
 
 }
 
-// computes ||x-y||_Inf
-static double maxdist(double *x, double *y, int n){
-    double t, m = fabs(x[0]-y[0]);
-    
-    for ( int j=1; j<n; j++ ){ 
-        t = fabs(x[j]-y[j]);
-        m = t > m ? t : m;
-    }
-    return m;
-}
 
 /* successive projection algorithm
  *
@@ -95,8 +83,11 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
    double *xw = (double *) calloc(n, sizeof(double));
    double *alpha = (double *) calloc(m, sizeof(double));
 
+   int maxrag = get_max_nrag(E);
+   double *wa = (double *) calloc(maxrag, sizeof(double));
+
    // todo: cleanup in case of emergency...
-   if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 ) return 1;
+   if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 || wa == 0 ) return 1;
 
    double diff = DBL_MAX, diff0 = 0;
    int exit_status = 0;
@@ -116,19 +107,20 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
    while ( diff > tol[0] && niter < maxiter[0] ){
   
       diff0 = diff;
-      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, awa[k], k);
-      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, alpha, awa[k], k);
+      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, wa, awa[k], k);
+      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, wa, alpha, awa[k], k);
       diff = maxdist(xt, x, n);
       // diff = sc_diffsum(E, x);
       for (int j=0; j<n; xt[j++] = x[j]);
       ++niter;
-      if (diff > diff0){ // divergence: no joy at all.
+      if (diff > diff0 + *tol){ // divergence: no joy at all.
          exit_status = 2;
          break;
       }
    }
    *tol = diff;
    *maxiter = niter;
+   free(wa);
    free(awa);
    free(xt);
    free(xw);

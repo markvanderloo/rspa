@@ -31,7 +31,7 @@ SparseConstraints * sc_from_matrix(double *, double *, int, int, int, double);
 
 SparseConstraints * sc_from_sparse_matrix(int *, int *, double *, int, double *, int, int);
 
-
+int get_max_nrag(SparseConstraints *);
 
 #endif
 

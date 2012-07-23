@@ -20,7 +20,7 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
    double xtol = REAL(tol)[0];
    int xmaxiter = INTEGER(maxiter)[0];
    int s;
-   double xx[length(x)];
+   double *xx = (double *) calloc(length(x), sizeof(double));
    for ( int i=0; i<length(x); xx[i++] = REAL(x)[i]);
 
    // solve
@@ -42,7 +42,7 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
    setAttrib(out,install("accuracy"), eps);
    setAttrib(out,install("status"), status);
 
-
+   free(xx);
    UNPROTECT(7);
    return out;
 }

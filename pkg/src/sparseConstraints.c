@@ -121,6 +121,12 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
 
 }
 
+int get_max_nrag(SparseConstraints *E){
+   int nmax = 0;
+   for ( int i=0; i < E->nconstraints; ++i ){
+      nmax = nmax < E->nrag[i] ? E->nrag[i] : nmax;
+   }
+}
 
 
 
