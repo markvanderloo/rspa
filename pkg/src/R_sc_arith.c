@@ -50,6 +50,7 @@ SEXP R_sc_diffsum(SEXP p, SEXP x){
 
 }
 
+/* this is currently not exported
 SEXP R_sc_substvalue(SEXP p, SEXP col, SEXP val){
    PROTECT(p);
    PROTECT(col);
@@ -64,5 +65,5 @@ SEXP R_sc_substvalue(SEXP p, SEXP col, SEXP val){
    UNPROTECT(4);
 
    return nsub;
-}
+}*/
 
