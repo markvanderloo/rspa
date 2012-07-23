@@ -4,6 +4,14 @@
 # temporary vim files
 *.swp
 
+# tex stuff
+*.pdf
+*.tex
+*.bbl
+*.blg
+*.log
+
+
 pkg/DESCRIPTION
 pkg/NAMESPACE
 
