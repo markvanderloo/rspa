@@ -23,7 +23,7 @@ e$getVars()     # <- number of variables
 e$nconstr()     # <- number of constraints
 
 
-### adapt a vector x to meet conditions 
+### adjust a vector x to meet conditions 
 # 
 
 # 
@@ -32,7 +32,7 @@ I <- match(e$getVars(), names(x))
 u <- x[I]
 
 e$diffsum(u)
-y <- e$adapt(u, tol=1e-5)
+y <- e$adjust(u, tol=1e-5)
 y
 # check the answer
 e$diffsum(y$x)

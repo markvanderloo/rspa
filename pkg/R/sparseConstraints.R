@@ -11,6 +11,7 @@ sparseConstraints = function(x, ...){
 
 
 #'
+#' @method sparseConstraints editmatrix
 #' @param tol Tolerance for testing where coefficients are zero
 #' @rdname sparseConstraints
 #' @export
@@ -29,6 +30,8 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 }
 
 
+#'
+#' @method sparseConstraints data.frame
 #'
 #' @param b Constant vector
 #' @param neq The first \code{new} equations are interpreted as equality constraints, the rest as '<='
@@ -58,8 +61,8 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), .
 
 
 
-#' print method for sparse constraints object
 #' 
+#' @method print sparseConstraints
 #' @param range integer vector stating which constraints to print
 #'
 #' @export
@@ -99,8 +102,8 @@ make_sc <- function(e){
       dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range),  PACKAGE="rspa")
    }
  
-   # adapt input vector minimally to meet restrictions.
-   e$adapt <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
+   # adjust input vector minimally to meet restrictions.
+   e$adjust <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
       d <- system.time( 
          y <- .Call('R_solve_sc_spa',
             e$.sc, 
@@ -125,7 +128,7 @@ make_sc <- function(e){
       names(y) <- e$.vars; 
       structure(
          list(x = y, accuracy = acc, niter = nit, duration=d, status=status ),
-         class = "adapt"
+         class = "adjusted"
       )   
    }
 

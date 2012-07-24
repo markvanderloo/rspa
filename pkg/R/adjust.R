@@ -1,18 +1,29 @@
 
-#
-# @param x an R object describing constraints
-# @param ... Arguments to be passed to other methods
-#
-#  @export
+#' Adjust a data to meet linear (in)equality constraints
+#'
+#' This is a user-friendly wrapper acessing both dense and sparse matrix methods 
+#' for variable adjutment. 
+#'
+#' @param object an R object describing constraints
+#' @param ... Arguments to be passed to other methods
+#'
+#' @export
 adjust <- function(object, ...){
    UseMethod('adjust')
 }
 
 
-# 
-#
-#
-#
+#' 
+#' @param b Constant vector of the constraint system \eqn{Ax\leq b}
+#' @param x The vector to be adjusted
+#' @param w A positive weight vector
+#' @param neq the first \code{neq} linear relations are equalities.
+#' @param tol The convergence criterium \bold{TODO: DESCTRIBE BETTER}
+#' @param maxiter maximum number of iterations
+#'
+#' @method adjust matrix
+#' @export
+#' @rdname adjust
 adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1e-2, maxiter=100L, ...){
    storage.mode(object) <- "double"
  
@@ -28,6 +39,10 @@ adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1
    )
 } 
 
+#'
+#' @method adjust editmatrix
+#' @export
+#' @rdname adjust
 adjust.editmatrix <- function(object, x,...){
    if (!isNormalized(object)) object <- normalize(object)
 
