@@ -1,3 +1,4 @@
+%\VignetteIndexEntry{getting-started}
 \documentclass[a4paper, 11pt, fleqn]{article}
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb}
