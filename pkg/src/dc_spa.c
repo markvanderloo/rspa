@@ -7,12 +7,11 @@
 
 static void update_x_k_eq(double *A, double *b, double *x, int m, int n, double *w, double *wa, double awa, int k){
 
-   int mk = m*k;
    double ax = 0;
 
    for ( int j=0; j<n; j++){
-      ax += A[j + mk] * x[j];
-      wa[j] = w[j] * A[j + mk];
+      ax += A[k + j*m] * x[j];
+      wa[j] = w[j] * A[k + j*m];
    }
 
    double fact = (ax - b[k])/awa;
@@ -23,11 +22,10 @@ static void update_x_k_in(double *A, double *b, double *x, int m, int n, double 
    
    double alpha_old = alpha[k];
 
-   int mk = m*k;
    double ax = 0;
    for ( int j=0; j<n; j++){
-      ax += A[j + mk] * x[j];
-      wa[j] = w[j] * A[j + mk];
+      ax += A[k + j*m] * x[j];
+      wa[j] = w[j] * A[k + j*m];
    }
 
    alpha[k] = alpha[k] + (ax - b[k])/awa;
@@ -58,7 +56,6 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
       free(awa); free(xt); free(xw); free(alpha); free(wa);
       return 1;
    }
-   
    double diff = DBL_MAX, diff0 = 0;
    int exit_status = 0;
    
@@ -74,6 +71,7 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
    }
 
    for ( int i=0; i<n; xt[i++]=x[i] );
+
 
    while ( diff > *tol && niter < *maxiter ){
       diff0 = diff;

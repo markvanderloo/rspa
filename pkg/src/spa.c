@@ -86,8 +86,11 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
    int maxrag = get_max_nrag(E);
    double *wa = (double *) calloc(maxrag, sizeof(double));
 
-   // todo: cleanup in case of emergency...
-   if ( alpha == 0 || awa == 0 || xt == 0 || xw == 0 || wa == 0 ) return 1;
+   // cleanup in case of emergency...
+   if ( awa == 0 || xt == 0 || xw == 0|| alpha == 0 || wa == 0 ){ 
+      free(awa); free(xt); free(xw); free(alpha); free(wa);
+      return 1;
+   }
 
    double diff = DBL_MAX, diff0 = 0;
    int exit_status = 0;
@@ -103,6 +106,7 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
    }
 
    for ( int i=0; i<n; xt[i++]=x[i] );
+
 
    while ( diff > tol[0] && niter < maxiter[0] ){
   

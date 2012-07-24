@@ -15,7 +15,7 @@ adjust <- function(object, ...){
 #
 adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1e-2, maxiter=100L, ...){
    storage.mode(object) <- "double"
-
+ 
    .Call("R_dc_solve", 
       object, 
       as.double(b), 
