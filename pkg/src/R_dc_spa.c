@@ -23,7 +23,6 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
    if ( n != length(x)) error("%s\n","Number of columns in constraint matrix does not match dimension of x.");
    if ( m != length(b)) error("%s\n","Number of rows in constraint matrix does not mathch dimension of b.");
 
-
    // make copies to avoid writing in user space
    SEXP tx = allocVector(REALSXP, n);
    for ( int j=0; j<n; REAL(tx)[j++] = xx[j]);
