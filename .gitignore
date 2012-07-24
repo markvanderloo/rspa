@@ -10,7 +10,7 @@
 *.bbl
 *.blg
 *.log
-
+*.aux
 
 pkg/DESCRIPTION
 pkg/NAMESPACE
