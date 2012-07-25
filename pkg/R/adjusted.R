@@ -14,7 +14,7 @@
 #' @rdname adjusted
 #' @export
 print.adjusted <- function(x, maxprint = 10, ...){
-    cat("Object of class 'adapt'\n")
+    cat("Object of class 'adjusted'\n")
     cat(sprintf("  Status    : %s\n", x$status))
     cat(sprintf("  Accuracy  : %g\n", x$accuracy))
     cat(sprintf("  Iterations: %d\n", x$niter))

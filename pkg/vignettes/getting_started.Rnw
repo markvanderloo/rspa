@@ -3,14 +3,26 @@
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb}
 \usepackage{natbib}
-
 \newcommand{\bs}[1]{\boldsymbol{#1}}
+
+%\usepackage[default]{comfortaa}
+\usepackage[T1]{fontenc}
+\usepackage{palatino}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\R}{\code{R}}
+\usepackage{inconsolata}
+
+\DeclareMathOperator*{\argmin}{\arg\min}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
 
 % tussenvoegsel hack.
 \DeclareRobustCommand{\VAN}[3]{#2}
 
 
-\title{Getting started with {\sf rspa}\\
+\title{Getting started with \code{rspa}\\
   {\small Package version \Sexpr{packageVersion("rspa")}}
 }
 \author{Mark van der Loo}
@@ -20,6 +32,16 @@
 
 
 \begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+opts_chunk$set(
+    size='small'
+#    prompt=TRUE,
+#    comment=''
+)
+@
+
+
 <<include=FALSE >>=
 library(rspa)
 library(editrules)
@@ -38,33 +60,33 @@ seconds.
 \end{abstract}
 
 \section{A simple example}
+\label{sect:example}
 The following example is borrowed from \cite{pannekoek:2012} and involves
 profit-loss account balances from a business survey. The problem described in
 the reference involves a record of eight variables $x_1\ldots x_8$ that have
 to obey the following rules.
 %
 \begin{eqnarray*}
-x_1 &=& x_5 + x_8\\
+x_5 &=& x_1 + x_8\\
 x_5 &=& x_3 + x_4\\
 x_8 &=& x_6 + x_7\\
-x_j &\geq& 0 \textrm{ for all }j.
+x_4 &\geq& 0.
 \end{eqnarray*}
 %
-The first task is to define these constraints in {\sf R}. The {\sf rspa}
+The first task is to define these constraints in \R. The \code{rspa}
 package offers several ways for this, but for this problem it is convenient to
-make use of the {\sf editrules} package \citep{jonge:2011} to define the
+make use of the \code{editrules} package \citep{jonge:2011} to define the
 constraints.
 %
 <<tidy=FALSE>>=
 E <- editmatrix(expression(
-    x5 + x8 == x1,
-    x3 + x4 == x5,
-    x6 + x7 == x8,
-    x4 > 0
-))
+    x5 + x8 == x1 + x8,
+    x5 == x3 + x4,
+    x8 == x6 + x7,
+    x4 > 0))
 @
-
-
+%
+%
 The record in the example has the following values
 <<tidy=FALSE>>=
 x <- c(
@@ -76,13 +98,57 @@ x <- c(
    x6=500,
    x7=200,
    x8=700)
-@
-
-
+@ 
+%
+To confirm that this vector does not meet the constraints, we call \code{violatedEdits}.
 <<>>=
-adjust(E,x)
+violatedEdits(E,x,tol=1e-2)
+@
+This shows that $x$ violates the first two rules (indicated with \code{TRUE}), at least to within
+a tolerance of $0.01$.
+
+In the example of \cite{pannekoek:2012}, the value of $x_5$ is considered
+correct. We can therefore substitute it in the set of constraints
+(\code{substValue}) and remove the corresponding variable from the set of
+constraints (\code{reduce}).
+<<>>=
+E <- reduce(substValue(E,'x5',x['x5']))
+@
+%
+Adjusting $\bs{x}$ so it meets the constratints can be done as follows.
+<<>>=
+(y <- adjust(E, x))
+@
+%
+The result is an object of class \code{adjusted}, which holds the found solution
+and some information on the algorithm. The solution can be accessed as \code{y\$x}.
+Using \code{violatedEdits} again, we see that now all restrictions are obeyed.
+<<>>=
+violatedEdits(E, y$x, 1e-2)
 @
 
+\section{About the adjustment algorithm}
+\label{sect:algorithm}
+The \code{rspa} package implements the {\em successive projection algorithm} of
+\cite{pannekoek:2012}. Given a vector $\bs{x}_0$ for which $\bs{Ax}_0\not\leq \bs{b}$.
+The algorithm solves the following minimization problem
+\begin{eqnarray}
+\bs{x} &=& \argmin_{\bs{x}'} (\bs{x}'-\bs{x}_0)\bs{W}(\bs{x}' - \bs{x}_0)\nonumber\\
+s.t. &\: &\nonumber\\
+\bs{Ax} &\leq& \bs{b},
+\end{eqnarray}
+where $\bs{W}$ is a diagonal weight matrix. By default, al weights are chosen
+equal to $1$ in the package. The weights must be larger than zero. In words,
+the algorithm finds the vector with the smallest (weighted) Euclidian distance
+from the starting vector $\bs{x}_0$ that obeys the restrictions.
+
+The algorithm works by iteratively adjusting the starting vector $\bs{x}_0$
+until convergence is reached. Convergence is reached when the largest
+deviation from the restrictions is smaller than some tolerance $\varepsilon$:
+\begin{equation}
+||\bs{Ax}-\bs{b}||_\infty < \varepsilon,
+\end{equation}
+where $\varepsilon=10^{-2}$ by default. 
 
 
 \section{Adapting a set of records in a {\sf data.frame}}

@@ -46,21 +46,21 @@ adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1
 #' @method adjust editmatrix
 #' @export
 #' @rdname adjust
-adjust.editmatrix <- function(object, x,...){
+adjust.editmatrix <- function(object, x, ...){
    if (!isNormalized(object)) object <- normalize(object)
 
    # match names 
    if ( !is.null(names(x)) ){
       J <- match(getVars(object), names(x))
-      u <- x[J]
    } else {
       stopifnot(length(x) == length(getVars(object)))
       J <- 1:length(x)
    }
+   u <- x[J]
 
-   I <- order(getOps(object),decreasing=TRUE)
-
-   neq <- sum(getOps(object) == "==")
+   ops <- getOps(object)
+   I <- order(ops,decreasing=TRUE)
+   neq <- sum(ops == "==")
 
    y <- adjust.matrix(
       object = getA(object)[I,,drop=FALSE], 
@@ -70,7 +70,7 @@ adjust.editmatrix <- function(object, x,...){
       ... 
    )
    
-   x[I] <- y$x
+   x[J] <- y$x
    y$x <- x
    y
 }
