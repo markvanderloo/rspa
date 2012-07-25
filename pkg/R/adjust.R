@@ -26,8 +26,9 @@ adjust <- function(object, ...){
 #' @rdname adjust
 adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1e-2, maxiter=100L, ...){
    storage.mode(object) <- "double"
- 
-   .Call("R_dc_solve", 
+
+   t0 <- proc.time()
+   y <- .Call("R_dc_solve", 
       object, 
       as.double(b), 
       as.double(w),
@@ -37,6 +38,8 @@ adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1
       as.double(x),
       PACKAGE="rspa"
    )
+   t1 <- proc.time()
+   new_adjusted(y, t1-t0, colnames(object))
 } 
 
 #'
@@ -46,9 +49,9 @@ adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1
 adjust.editmatrix <- function(object, x,...){
    if (!isNormalized(object)) object <- normalize(object)
 
-
+   # match names 
    if ( !is.null(names(x)) ){
-      J <- match(getVars(object),names(x))
+      J <- match(getVars(object), names(x))
       u <- x[J]
    } else {
       stopifnot(length(x) == length(getVars(object)))
@@ -67,6 +70,8 @@ adjust.editmatrix <- function(object, x,...){
       ... 
    )
    
+   x[I] <- y$x
+   y$x <- x
    y
 }
 

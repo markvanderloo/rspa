@@ -79,6 +79,10 @@ x <- c(
 @
 
 
+<<>>=
+adjust(E,x)
+@
+
 
 
 \section{Adapting a set of records in a {\sf data.frame}}
