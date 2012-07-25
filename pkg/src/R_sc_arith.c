@@ -35,6 +35,21 @@ SEXP R_sc_diffvec(SEXP p, SEXP x){
 
 }
 
+SEXP R_sc_diffmax(SEXP p, SEXP x){
+
+   PROTECT(p);
+   PROTECT(x);
+   SparseConstraints *xp = R_ExternalPtrAddr(p);
+
+   SEXP d = allocVector(REALSXP,1);
+   PROTECT(d);
+   REAL(d)[0] = sc_diffmax( xp, REAL(x) );
+   UNPROTECT(3);
+
+   Rprintf("I'm returning %g\n",REAL(d)[0]);
+   return d;
+
+}
 
 SEXP R_sc_diffsum(SEXP p, SEXP x){
 

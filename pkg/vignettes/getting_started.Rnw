@@ -34,6 +34,7 @@
 \begin{document}
 
 <<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
 opts_chunk$set(
     size='small'
 #    prompt=TRUE,
@@ -49,14 +50,13 @@ library(editrules)
 \maketitle
 
 \begin{abstract}
-This package offers functionality to minimally adjust a vector $\bs{x}$
-such that after adaptation, it obeys the system $\bs{Ax}\leq \bs{b}$.
-The package implements the the successive projection algorithm
-of \cite{pannekoek:2012}. The are are several ways to define what ``minimal'' 
-means here, and the package allows for fairly large systems of equations.
-Thus far it has been tested on systems with on the order of $10^5-10^6$
-variables and $10^4-10^5$ restrictions. Convergence is usually reached within
-seconds.
+This package offers functionality to minimally adjust a vector $\bs{x}$ such
+that it obeys the system of (in)equations $\bs{Ax}\leq \bs{b}$.  The package
+implements the the successive projection algorithm of \cite{pannekoek:2012}.
+The are are several ways to define what ``minimal'' means here, and the package
+allows for fairly large systems of equations.  Thus far it has been tested on
+systems with on the order of $10^5-10^6$ variables and $10^4-10^5$
+restrictions. Convergence is usually reached within seconds.
 \end{abstract}
 
 \section{A simple example}
@@ -80,7 +80,7 @@ constraints.
 %
 <<tidy=FALSE>>=
 E <- editmatrix(expression(
-    x5 + x8 == x1 + x8,
+    x5 == x1 + x8,
     x5 == x3 + x4,
     x8 == x6 + x7,
     x4 > 0))
@@ -124,8 +124,9 @@ The result is an object of class \code{adjusted}, which holds the found solution
 and some information on the algorithm. The solution can be accessed as \code{y\$x}.
 Using \code{violatedEdits} again, we see that now all restrictions are obeyed.
 <<>>=
-violatedEdits(E, y$x, 1e-2)
+violatedEdits(E, y$x, tol = 1e-2)
 @
+The output shows that the solution obeys the restrictions to within $10^{-2}$.
 
 \section{About the adjustment algorithm}
 \label{sect:algorithm}

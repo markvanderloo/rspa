@@ -122,6 +122,11 @@ make_sc <- function(e){
       .Call("R_sc_diffsum", e$.sc, as.double(x), PACKAGE="rspa") 
    }
 
+   e$diffmax <- function(x){
+      stopifnot(length(x)==e$nvar())
+      .Call("R_sc_diffmax", e$.sc, as.double(x), PACKAGE="rspa") 
+   }
+
    e$multiply <- function(x){
       stopifnot(length(x) == e$nvar());
       .Call("R_sc_multvec", e$.sc, as.double(x), PACKAGE="rspa")
