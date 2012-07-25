@@ -61,7 +61,6 @@ double sc_diffmax(SparseConstraints *E, double *x){
       dmax = d > dmax ? d : dmax;
 
    }
-Rprintf("returning %g\n",dmax);
    return dmax;
 }
 

@@ -24,7 +24,7 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
    e <- new.env();
    A <- getA(x);
    storage.mode(A) <- "double"
-   e$.sc <- .Call("R_sc_from_matrix", A, as.double(getb(x)), as.integer(sum(ieq)), as.double(tol), PACKAGE="rspa")
+   e$.sc <- .Call("R_sc_from_matrix", A, as.double(getb(x)), as.integer(sum(ieq)), as.double(tol))
    e$.vars <- getVars(x)
    make_sc(e)
 }
@@ -51,8 +51,7 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), .
       as.integer(x[,2]-base),
       as.double(x[,3]), 
       as.double(b),
-      as.integer(neq),
-      PACKAGE="rspa"
+      as.integer(neq)
    )
    make_sc(e)
 
@@ -79,11 +78,11 @@ make_sc <- function(e){
    }
    
    e$nvar <- function(){
-      .Call("R_get_nvar", e$.sc, PACKAGE="rspa")
+      .Call("R_get_nvar", e$.sc)
    }
 
    e$nconstr <- function(){
-      .Call("R_get_nconstraints", e$.sc, PACKAGE="rspa")
+      .Call("R_get_nconstraints", e$.sc)
    }
    
    e$getVars <- function(){
@@ -99,7 +98,7 @@ make_sc <- function(e){
       stopifnot(all(range >= 1))
       range = range-1;
 
-      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range),  PACKAGE="rspa")
+      dump <- .Call("R_print_sc",e$.sc, vars, as.integer(range))
    }
  
    # adjust input vector minimally to meet restrictions.
@@ -110,8 +109,7 @@ make_sc <- function(e){
          as.double(x), 
          as.double(w), 
          as.double(tol), 
-         as.integer(maxiter),
-         PACKAGE="rspa"
+         as.integer(maxiter)
       )
       t1 <- proc.time()
       new_adjusted(y,t1-t0, e$getVars())
@@ -119,22 +117,22 @@ make_sc <- function(e){
 
    e$diffsum <- function(x){
       stopifnot(length(x)==e$nvar())
-      .Call("R_sc_diffsum", e$.sc, as.double(x), PACKAGE="rspa") 
+      .Call("R_sc_diffsum", e$.sc, as.double(x)) 
    }
 
    e$diffmax <- function(x){
       stopifnot(length(x)==e$nvar())
-      .Call("R_sc_diffmax", e$.sc, as.double(x), PACKAGE="rspa") 
+      .Call("R_sc_diffmax", e$.sc, as.double(x)) 
    }
 
    e$multiply <- function(x){
       stopifnot(length(x) == e$nvar());
-      .Call("R_sc_multvec", e$.sc, as.double(x), PACKAGE="rspa")
+      .Call("R_sc_multvec", e$.sc, as.double(x))
    }
 
    e$diffvec <- function(x){
       stopifnot(length(x) == e$nvar())
-      .Call("R_sc_diffvec", e$.sc, as.double(x), PACKAGE="rspa")
+      .Call("R_sc_diffvec", e$.sc, as.double(x))
    }
 
    

@@ -11,5 +11,5 @@ Version: 0.1-0
 Depends: R (>= 2.12.0)
 URL: http://www.markvanderloo.eu
 Date: 2012-07-15
-Depends: knitr, editrules
-
+Depends: editrules
+Suggests: knitr

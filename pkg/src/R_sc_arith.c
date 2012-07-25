@@ -46,7 +46,6 @@ SEXP R_sc_diffmax(SEXP p, SEXP x){
    REAL(d)[0] = sc_diffmax( xp, REAL(x) );
    UNPROTECT(3);
 
-   Rprintf("I'm returning %g\n",REAL(d)[0]);
    return d;
 
 }

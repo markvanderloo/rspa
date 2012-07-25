@@ -35,8 +35,7 @@ adjust.matrix <- function(object, b, x, w=rep(1,length(x)), neq=length(b), tol=1
       as.integer(neq),
       as.double(tol),
       as.integer(maxiter),
-      as.double(x),
-      PACKAGE="rspa"
+      as.double(x)
    )
    t1 <- proc.time()
    new_adjusted(y, t1-t0, colnames(object))
