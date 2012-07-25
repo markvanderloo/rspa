@@ -10,6 +10,7 @@ library(editrules)
 
 context("SparseConstraints")
 
+
 test_that("sparseConstraints are properly constructed from editmatrix",{
    expect_equal(e$nvar(), 2)
    expect_equal(e$getVars(), c("x","y"))
@@ -34,7 +35,6 @@ test_that("sparseConstraints adjustment methods work",{
    # adjusting necessary
    x <- c(x=0,y=0)
    expect_equal(e$adjust(x)$x, c(x=0.5,y=0.5))
-
 
 })
 
