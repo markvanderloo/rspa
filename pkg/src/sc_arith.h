@@ -22,6 +22,7 @@ void sc_diffvec(SparseConstraints *E, double *x, double *diff);
  */
 double sc_diffsum(SparseConstraints *, double *);
 
+
 double sc_diffmax(SparseConstraints *, double *);
 
 

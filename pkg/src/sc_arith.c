@@ -48,6 +48,7 @@ double sc_diffsum(SparseConstraints *E, double *x){
 }
 
 
+
 double sc_diffmax(SparseConstraints *E, double *x){
    double d, dmax=0;
 

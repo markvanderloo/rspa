@@ -113,8 +113,8 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
       diff0 = diff;
       for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, wa, awa[k], k);
       for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, wa, alpha, awa[k], k);
-      diff = maxdist(xt, x, n);
-      // diff = sc_diffsum(E, x);
+//      diff = maxdist(xt, x, n);
+       diff = sc_diffmax(E, x);
       for (int j=0; j<n; xt[j++] = x[j]);
       ++niter;
       if (diff > diff0 + *tol){ // divergence: no joy at all.

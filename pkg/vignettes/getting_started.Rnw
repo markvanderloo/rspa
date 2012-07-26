@@ -128,6 +128,9 @@ violatedEdits(E, y$x, tol = 1e-2)
 @
 The output shows that the solution obeys the restrictions to within $10^{-2}$.
 
+
+
+
 \section{About the adjustment algorithm}
 \label{sect:algorithm}
 The \code{rspa} package implements the {\em successive projection algorithm} of
