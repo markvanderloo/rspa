@@ -7,6 +7,7 @@
 #' @example ../examples/sparseConstraints.R
 sparseConstraints = function(x, ...){
     UseMethod("sparseConstraints")
+
 }
 
 
@@ -36,15 +37,17 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 #' @param b Constant vector
 #' @param neq The first \code{new} equations are interpreted as equality constraints, the rest as '<='
 #' @param base are the indices in \code{x[,1:2]} base 0 or base 1?
+#' @param sorted is \code{x} sorted by the  first column?
 #' @export
 #' @rdname sparseConstraints
-sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), ...){
+sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), sorted=FALSE, ...){
    if (length(b) != length(unique(x[,1]))){
       stop("length of b unequal to number of constraints")
    }
    if (base > 1){
       stop("base should be 1 or 0 (does your condition matrix have empty columns?)")
    }
+	if ( !sorted ) x <- x[order(x),]
    e <- new.env()
    e$.sc <- .Call("R_sc_from_sparse_matrix", 
       as.integer(x[,1]), 
@@ -102,7 +105,7 @@ make_sc <- function(e){
    }
  
    # adjust input vector minimally to meet restrictions.
-   e$adjust <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=1e5L, ...){
+   e$adjust <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=100L, ...){
       t0 <- proc.time() 
       y <- .Call('R_solve_sc_spa',
          e$.sc, 
