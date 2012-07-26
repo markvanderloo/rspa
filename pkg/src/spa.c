@@ -8,12 +8,12 @@
 #include "maxdist.h"
 
 // update equalities
-static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double *wa, double awa, int k){
+static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double *wa, double awa, int k, double *fact){
     
     double *ak = E->A[k];
     int *I = E->index[k];
     int nrag = E->nrag[k];
-    double fact;
+    
 
     double ax = 0;
     for ( int j=0; j<nrag; j++ ){
@@ -21,15 +21,15 @@ static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double *wa
         wa[j] = w[I[j]] * ak[j];
     }
     
-    fact = (ax - E->b[k])/awa;
+    fact[k] = (ax - E->b[k])/awa;
 
     for( int j=0; j < nrag; j++ ){
-        x[I[j]] = x[I[j]] - wa[j]*fact;
+        x[I[j]] = x[I[j]] - wa[j]*fact[k];
     }
 }
 
 // update inequalities: alpha and x.
-static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa, double *alpha, double awa, int k){
+static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa, double *alpha, double awa, int k, double *fact){
 
    double *ak = E->A[k];
    int *I = E->index[k];
@@ -43,8 +43,9 @@ static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa
       wa[j] = w[I[j]] * ak[j];
    }
 
+   fact[k] = (ax - E->b[k])/awa;
 
-   alpha[k] = alpha[k] + (ax - E->b[k])/awa;
+   alpha[k] = alpha[k] + fact[k];
    alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
     
    double alphadiff = alpha_old - alpha[k];
@@ -52,24 +53,12 @@ static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa
       x[I[j]] +=   wa[j]*alphadiff;
    }
 
+
 }
 
 
-/* successive projection algorithm
- *
- * inputs:
- *    E: constraints
- *    w: weights (must be positive, this is not checked)
- * in/out
- *    tol     : asked/achieved convergence, measured as inf-norm between successive iterations of x
- *    maxiter : allowed/ran number of iterations
- *    x       : vector to optimize / optimized vector
- *
- * exit codes:
- *  0 all's well
- *  1 memory allocation error; aborted
- *  2 divergence detected; aborted
- */
+
+// successive projection algorithm
 int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
 
    int m = E->nconstraints;
@@ -82,17 +71,17 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
    double *xt = (double *) calloc(n, sizeof(double));     
    double *xw = (double *) calloc(n, sizeof(double));
    double *alpha = (double *) calloc(m, sizeof(double));
+   double *conv = (double *) calloc(m, sizeof(double));
 
    int maxrag = get_max_nrag(E);
    double *wa = (double *) calloc(maxrag, sizeof(double));
 
    // cleanup in case of emergency...
-   if ( awa == 0 || xt == 0 || xw == 0|| alpha == 0 || wa == 0 ){ 
-      free(awa); free(xt); free(xw); free(alpha); free(wa);
+   if ( awa == 0 || xt == 0 || xw == 0|| alpha == 0 || conv==0 || wa == 0 ){ 
+      free(awa); free(xt); free(xw); free(alpha); free(conv); free(wa);
       return 1;
    }
 
-   double diff = DBL_MAX, diff0 = 0;
    int exit_status = 0;
    // we only need w's inverse.
    for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
@@ -107,28 +96,31 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
 
    for ( int i=0; i<n; xt[i++]=x[i] );
 
+   double div0, div=DBL_MAX;
+   double diff=DBL_MAX;
 
    while ( diff > tol[0] && niter < maxiter[0] ){
-  
-      diff0 = diff;
-      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, wa, awa[k], k);
-      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, wa, alpha, awa[k], k);
-//      diff = maxdist(xt, x, n);
-       diff = sc_diffmax(E, x);
-      for (int j=0; j<n; xt[j++] = x[j]);
+
+      div0 = div;
+      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, wa, awa[k], k, conv);
+      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, wa, alpha, awa[k], k, conv);
       ++niter;
-      if (diff > diff0 + *tol){ // divergence: no joy at all.
+
+		// convergence criterion
+		diff = absmax(conv, awa, E->neq, E->nconstraints); 
+
+		// divergence check
+      div = maxdist(xt, x, n);
+      if (div > div0 + tol[0]){ // divergence: no joy at all.
          exit_status = 2;
          break;
       }
+      for (int j=0; j<n; xt[j++] = x[j]);
    }
-   *tol = diff;
+
+   *tol = sc_diffmax(E,x); // actual difference in current vector
    *maxiter = niter;
-   free(wa);
-   free(awa);
-   free(xt);
-   free(xw);
-   free(alpha);
+   free(wa); free(awa); free(xt); free(xw); free(alpha); free(conv);
    return exit_status;
 }
 
