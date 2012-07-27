@@ -98,7 +98,7 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
       E->nrag[irow]    = 1 + row_end - row_start;
       E->index[irow]   = (int *) calloc( E->nrag[irow], sizeof(int));
       E->A[irow]       = (double *) calloc( E->nrag[irow], sizeof(double));
-      if ( E->A[irow] == 0 || E->index[irow] == 0 ){ // no joy at all
+      if ( E->A[irow] == 0 || E->index[irow] == 0 ){ // no memory = no joy 
          E->nconstraints = irow-1;
          sc_del(E);
          return (SparseConstraints *)0;

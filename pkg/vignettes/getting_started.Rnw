@@ -111,6 +111,7 @@ In the example of \cite{pannekoek:2012}, the value of $x_5$ is considered
 correct. We can therefore substitute it in the set of constraints
 (\code{substValue}) and remove the corresponding variable from the set of
 constraints (\code{reduce}).
+\label{code:substvalue}
 <<>>=
 E <- reduce(substValue(E,'x5',x['x5']))
 @
@@ -127,38 +128,163 @@ Using \code{violatedEdits} again, we see that now all restrictions are obeyed.
 violatedEdits(E, y$x, tol = 1e-2)
 @
 The output shows that the solution obeys the restrictions to within $10^{-2}$.
+We will focus on the convergence criterion in the next section but before that,
+note the following properties of the \code{adjust} function.
+\begin{itemize}
+\item It only adjusts variables in $\bs{x}$ that occur in at least one of the restrictions.
+\item If first argument
+of \code{adjust} is an \code{editmatrix} and the variables in $\bs{x}$ are
+named, they will automatically be matched so the order of variables is unimportant.
+\end{itemize} 
+The \code{adjust} function is a generic function and it accepts constraints in
+\code{matrix}, \code{sparseConstraints} or \code{editmatrix} format. For small
+adjustment problems, up to say a few hundred variables and constrainsts, the
+\code{matrix} or \code{editmatrix} format will be fine. Large problems, with
+thousands of variables and restrictions can be defined in sparse format and
+the adjustment problem is solved with a routine for sparse adjustment.
 
 
 
 
-\section{About the adjustment algorithm}
+
+
+\section{Treating large problems}
+For problems where $\bs{x}$ has many coefficients and when there are many restrictions,
+the package includes an adjustment algorithm based on a sparse representation of the
+restrictions. In a sparse representation, elements of the restriction matrix $\bs{A}$
+that are zero are not stored in computer memory.
+
+Such a sparse representation is held in a \code{sparseConstraints} object. 
+The function \code{sparseConstraints} constructs such objects and accepts arguments in the
+form of either
+\begin{itemize}
+\item An \code{editmatrix}
+\item A \code{matrix} $\bs{A}$, a constant vector $\bs{b}$ and an integer $n_=$ indicating which
+rows of $\bs{A}$ represent equalities.
+\item A \code{data.frame} holding row indices, column indices and coefficients of $\bs{A}$ in 
+its three columns, the vector $\bs{b}$ and $n_=$.
+\end{itemize}
+%
+For large problems, the \code{data.frame} method is probably the most convenient so this will
+be demonstrated below.
+
+Consider again the constraints in \code{E} of page \pageref{code:substvalue}. After substituting
+$x_5=950$, it reads explicitly:
+<<>>=
+E
+@
+%
+To create an object of class \code{sparseConstraints} we generate a
+\code{data.frame} called \code{rc} and a vector \code{b}:
+<<echo=TRUE,tidy=FALSE>>=
+rc <- data.frame(
+   row = c( 1, 1, 2, 2, 3, 3, 3, 4),
+   col = c( 1, 2, 3, 4, 2, 5, 6, 4),
+  coef = c(-1,-1,-1,-1, 1,-1,-1,-1)
+)
+b <- c(-950, -950, 0,0)
+@
+Compare these indices and coefficients with the \code{editmatrix} representation above.
+With the \code{sparseConstraints} function a sparse representation is generated.
+<<>>=
+e <- sparseConstraints(rc, b, neq=3, sorted=TRUE)
+e
+@
+By passing the argument \code{sorted=TRUE}, we tell \code{sparseConstraints}
+that the input \code{data.frame} is sorted increasingly by column number (so it
+does not have to sort it again). The function detected here that row- and
+column indices are ``base 1'' (the lowest value equals 1). It is also possible
+to pass coefficient definitions wich are base 0. Note that we did not feed
+\code{sparseConstraints} any names, so it makes up some names to represent the
+rules in textual form. 
+
+The \code{sparseConstraints} object is a \emph{reference object} that holds
+a pointer to an object outside of \code{R}'s memory. Therefore, objects of
+class \code{sparseConstraints}
+\begin{itemize}
+\item cannot be copied. Copying generates a pointer to the same object.
+\item cannot be saved. Only the pointer to the external object will be stored.
+The external object is destroyed by \code{R}'s garbage collector when \code{R}
+closes, or when the \code{sparseConstraints} object is deleted or overwritten.
+\end{itemize}
+In a future version we might add a export option so that such objects can
+be saved as a fixed-widht file, for example.
+
+Next, we define a new vector that matches these constraints and adjust it.
+<<>>=
+x_sparse = c(330, 700, 1000, 30, 500, 200) 
+adjust(e, x_sparse)
+@
+Which gives the results as expected.
+
+
+\section{About the adjustment algorithm and convergence}
 \label{sect:algorithm}
 The \code{rspa} package implements the {\em successive projection algorithm} of
-\cite{pannekoek:2012}. Given a vector $\bs{x}_0$ for which $\bs{Ax}_0\not\leq \bs{b}$.
+\cite{pannekoek:2012}. Given a vector $\bs{x}^0$ for which $\bs{Ax}^0\not\leq \bs{b}$.
 The algorithm solves the following minimization problem
 \begin{eqnarray}
-\bs{x} &=& \argmin_{\bs{x}'} (\bs{x}'-\bs{x}_0)\bs{W}(\bs{x}' - \bs{x}_0)\nonumber\\
+\lefteqn{
+\argmin_{\bs{x}} (\bs{x}-\bs{x}^0)'\bs{W}(\bs{x} - \bs{x}^0)}\nonumber\\
 s.t. &\: &\nonumber\\
 \bs{Ax} &\leq& \bs{b},
 \end{eqnarray}
 where $\bs{W}$ is a diagonal weight matrix. By default, al weights are chosen
 equal to $1$ in the package. The weights must be larger than zero. In words,
 the algorithm finds the vector with the smallest (weighted) Euclidian distance
-from the starting vector $\bs{x}_0$ that obeys the restrictions.
+from the starting vector $\bs{x}^0$ that obeys the restrictions.
 
-The algorithm works by iteratively adjusting the starting vector $\bs{x}_0$
-until convergence is reached. Convergence is reached when the largest
-deviation from the restrictions is smaller than some tolerance $\varepsilon$:
+To define the convergence criterion, we separate the equality from inequality
+restrictions and write
+\begin{eqnarray}
+\label{eq:equalities}
+\bs{A}_=\bs{x} &=& \bs{b}_=\\
+\label{eq:inequalities}
+\bs{A}_\leq\bs{x} &\leq& \bs{b}_\leq.
+\end{eqnarray}
+We now define $\varepsilon_=$ as the maximum difference between the 
+left- and right hand side of \eqref{eq:equalities} (the infinity norm):
 \begin{equation}
-||\bs{Ax}-\bs{b}||_\infty < \varepsilon,
+\varepsilon_= = \left\|\bs{A}_=\bs{x} - \bs{b}_=\right\|_\infty.\\
 \end{equation}
-where $\varepsilon=10^{-2}$ by default. 
+We also introduce the notation 
+$
+\bs{d}_\leq = \bs{A}_\leq\bs{x} - \bs{b}_\leq
+$
+and define
+\begin{equation}
+\varepsilon_\leq = \left\|\tfrac{1}{2}\left(|\bs{d}_\leq| +\bs{d}_\leq\right)\right\|_\infty.
+\end{equation}
+This formulation ensures that $\varepsilon_\leq >0$ only when at least one inequality
+is not obeyed by $\bs{x}$. The algorithm works by iteratively improving $\bs{x}^{0}$
+until the convergence parameter $\max(\varepsilon_=,\varepsilon_\leq)<\varepsilon$.
+In other words: the algorithm terminates when the largest deviation from any of the 
+(in)equality restrictions is met within a small parameter $\varepsilon$.
 
 
-\section{Adapting a set of records in a {\sf data.frame}}
+
+\section{Some notes on implementation}
+The algorithm of \cite{pannekoek:2012} has been implemented twice in this package.
+Both implementations run as compiled \code{C} code which is linked to \code{R}.
+The first implementation uses a dense matrix representation, and is called by
+\code{adjust.matrix}. It is also the default method that is called by \code{adjust.editmatrix}.
+However, if the optional argument \code{method='sparse'} is passed to \code{adjust.editmatrix},
+the \code{editmatrix} object will be coerced to a \code{sparseConstraints} object prior to
+adjusting.
+
+The \code{sparseConstraints} object is represented under the hood as a \code{C}
+\code{struct} that resides outside of \code{R}'s memory. It is an
+\code{R\_ExternalPtr} object, packed in an environment which is put in a
+\code{S3} class. There is therefore no point in trying to save a 
+\code{sparseConstraints} object, since the external structure will be destroyed when \code{R}
+closes.
 
 
-\section{Treating large problems}
+
+
+
+
+
 
 \bibliographystyle{chicago}
 \DeclareRobustCommand{\VAN}[3]{#3}

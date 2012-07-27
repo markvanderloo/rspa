@@ -18,7 +18,7 @@ sparseConstraints = function(x, ...){
 #' @export
 sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
    if (!isNormalized(x)) normalize(x)
-
+   x <- reduce(x,tol=tol)
    ieq <- getOps(x) == '=='
    I <- c(which(ieq),which(!ieq))
    x <- x[I,];
@@ -47,7 +47,7 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), s
    if (base > 1){
       stop("base should be 1 or 0 (does your condition matrix have empty columns?)")
    }
-	if ( !sorted ) x <- x[order(x),]
+	if ( !sorted ) x <- x[order(x[,1]),,drop=FALSE]
    e <- new.env()
    e$.sc <- .Call("R_sc_from_sparse_matrix", 
       as.integer(x[,1]), 
