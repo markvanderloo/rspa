@@ -59,6 +59,10 @@ systems with on the order of $10^5-10^6$ variables and $10^4-10^5$
 restrictions. Convergence is usually reached within seconds.
 \end{abstract}
 
+\tableofcontents
+
+\newpage
+
 \section{A simple example}
 \label{sect:example}
 The following example is borrowed from \cite{pannekoek:2012} and involves
@@ -169,7 +173,7 @@ For large problems, the \code{data.frame} method is probably the most convenient
 be demonstrated below.
 
 Consider again the constraints in \code{E} of page \pageref{code:substvalue}. After substituting
-$x_5=950$, it reads explicitly:
+$x_5=950$, it reads:
 <<>>=
 E
 @
