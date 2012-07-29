@@ -22,8 +22,8 @@
 #'  \item[matrix]{If \code{object} is a \code{matrix}, you also need to provide the constant vector
 #'   \code{b} and the number of equations \code{neq} to define the problem. It is assumed that the first
 #'   \code{neq} rows of \code{object} and the first \code{new} elements of \code{b} correspond to equalities. No names are matched, so \code{x}
-#'    must be in the correct order and must be of the right dimension. If \code{object} is a \code{matrix},
-#'    the problem is solved with the dense method. See \code{\link{sparseConstraints}} on how to translate
+#'    must be in the correct order and must be of the right dimension.
+#'    See \code{\link{sparseConstraints}} on how to translate
 #'    a \code{matrix} problem to the sparse version.
 #'  } 
 #'

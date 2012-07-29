@@ -9,7 +9,7 @@
 #' @section Details:
 #' 
 #' The \code{sparseConstraints} objects holds the system \eqn{\boldsymbol{Ax}\leq \boldsymbol{b}}
-#' in column sparse format, outside of \code{R}'s. memory. In \code{R}, it is a \emph{reference object}.
+#' in column sparse format, outside of \code{R}'s memory. In \code{R}, it is a \emph{reference object}.
 #' In particular, it is meaningless to
 #' \itemize{
 #'    \item{Copy the object. You only will only generate a pointer to physically the same object.}
