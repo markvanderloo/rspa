@@ -1,7 +1,23 @@
 #' Adjusted object
 #' @name adjusted
-#' @format The \code{adjusted} object contains the results
-#' for adjusting a single vector.
+#' @format The \code{adjusted} result of adjusting a vector with \code{\link{adjust}}.
+#'
+#'
+#' @section Details: 
+#' A \code{adjusted} object contains the adjusted vector as well as some information on how
+#' the adjustment was achieved. In particular, it contains the following slots (to be accessed with
+#' the dollar operator):
+#'    \itemize{
+#'       \item{ \code{\$x} the adjusted vector.}
+#'       \item{ \code{\$accuracy} Maximum deviance of \code{\$x} from the constraints (see \code{\link{adjust}} for details).}
+#'       \item{ \code{\$duration} \code{proc_time} object showing time it took to run the adjustment. (See \code{proc.time}).}
+#'       \item{ \code{\$niter} Number of iterations.}
+#'       \item{ \code{\$status} A \code{character} string stating whether the adjustment was successful (\code{success}), or aborted.}
+#'
+#'       }
+#'
+#'    }
+#'
 #'
 {}
 
@@ -32,7 +48,7 @@ new_adjusted <- function(x, duration, varnames=NULL){
       "success",
       "aborted: could not allocate enough memory",
       "aborted: divergence detected"
-   )
+   ) # TODO add method.
    acc = attr(x,"accuracy")
    nit = attr(x,"niter")
    status = statusLabels[attr(x,"status")+1]
