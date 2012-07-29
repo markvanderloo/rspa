@@ -1,8 +1,22 @@
 
-#' generate sparse restriction set
+#' Generate sparse set of constraints.
 #'
 #' @param x R object to be translated to sparseConstraints format.
 #' @param ... options to be passed to other methods
+#'
+#' @return Object of class \code{sparseConstraints} (see details).
+#' 
+#' @section Details:
+#' 
+#' The \code{sparseConstraints} objects holds the system \eqn{\boldsymbol{Ax}\leq \boldsymbol{b}}
+#' in column sparse format, outside of \code{R}'s. memory. In \code{R}, it is a \emph{reference object}.
+#' In particular, it is meaningless to
+#' \itemize{
+#'    \item{Copy the object. You only will only generate a pointer to physically the same object.}
+#'    \item{Save the object. The physical object is destroyed when \code{R} closes, or when \code{R}'s
+#'      garbage collector cleans up a removed \code{sparseConstraints} object.
+#' }
+#'
 #' @export
 #' @example ../examples/sparseConstraints.R
 sparseConstraints = function(x, ...){
@@ -75,6 +89,7 @@ print.sparseConstraints <- function(x, range=1L:10L, ...){
 
 # e: environment containing an R_ExternalPtr
 make_sc <- function(e){
+   #
    
    e$pointer <- function(){
       e$.sc
@@ -105,7 +120,7 @@ make_sc <- function(e){
    }
  
    # adjust input vector minimally to meet restrictions.
-   e$adjust <- function(x, w=rep(1,length(x)), tol=1e-2, maxiter=100L, ...){
+   e$.adjust <- function(x, w, tol, maxiter){
       t0 <- proc.time() 
       y <- .Call('R_solve_sc_spa',
          e$.sc, 
