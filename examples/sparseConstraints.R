@@ -1,5 +1,6 @@
+# TODO: MUCH TO SIMPLIFY
+#
 
-library(rspa)
 ### example of Pannekoek and Chun (2012)
 # define constraints ('edits'):
 E <- editmatrix(expression(
@@ -16,35 +17,20 @@ E <- substValue(E,'x5',x['x5'])
 
 # generate sparseConstraints objects
 e <- sparseConstraints(E)
-# we can print and get some properties
-e
-e$print(c(2,4)) # <- print limited range
-e$getVars()     # <- number of variables
-e$nconstr()     # <- number of constraints
 
-
-### adjust a vector x to meet conditions 
-# 
-
-# 
 I <- match(e$getVars(), names(x))
 
 u <- x[I]
 
-e$diffsum(u)
-y <- e$adjust(u, tol=1e-5)
+
+y <- adjust(e,u, tol=1e-5)
 y
-# check the answer
-e$diffsum(y$x)
 
 ## assemble the answer 
 xt <-  x;
 xt[I] <- y$x;
 
 # we can check that the new vector indeed obeys all restrictions (upto the tolerance)
-
-# old vector: (true means violation)
-violatedEdits(E,x, tol=1e-2)
 
 # new vector
 violatedEdits(E,xt, tol=1e-2)

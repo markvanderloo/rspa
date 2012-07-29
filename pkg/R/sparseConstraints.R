@@ -14,7 +14,7 @@
 #' \itemize{
 #'    \item{Copy the object. You only will only generate a pointer to physically the same object.}
 #'    \item{Save the object. The physical object is destroyed when \code{R} closes, or when \code{R}'s
-#'      garbage collector cleans up a removed \code{sparseConstraints} object.
+#'      garbage collector cleans up a removed \code{sparseConstraints} object.}
 #' }
 #'
 #' @export

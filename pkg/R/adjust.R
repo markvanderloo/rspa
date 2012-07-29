@@ -99,15 +99,15 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
       length(w) == length(x),
       is.numeric(w),
       all_finite(w),
-      !all(w>0),
+      all(w>0),
       tol > 0,
       is.finite(tol),
       maxiter > 0,
       is.finite(maxiter)
    )
 
-   object$.adjust(x, w, tol, maxiter)
-
+   y <- object$.adjust(x, w, tol, maxiter)
+   
 }
 
 
@@ -135,7 +135,7 @@ adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol
       length(w) == length(x),
       is.numeric(w),
       all_finite(w),
-      !all(w>0),
+      all(w>0),
       tol > 0,
       is.finite(tol),
       maxiter > 0,

@@ -54,7 +54,7 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
 
    setAttrib(tx, install("status"),status);
    setAttrib(tx, install("niter"), niter);
-   setAttrib(tx, install("eps"), eps);
+   setAttrib(tx, install("accuracy"), eps);
 
    UNPROTECT(9);
    return tx;
