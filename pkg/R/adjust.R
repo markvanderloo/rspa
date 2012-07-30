@@ -62,7 +62,7 @@ adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter
       J <- 1:length(x)
    }
    u <- x[J]
-
+   w <- w[J]
    ops <- getOps(object)
    I <- order(ops,decreasing=TRUE)
    neq <- sum(ops == "==")
@@ -76,6 +76,7 @@ adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter
 			b      = getb(object)[I], 
 			x      = u,
 			neq    = neq,
+			w      = w,
 			... 
 		)
 	} 
