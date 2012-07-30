@@ -1,6 +1,5 @@
 #' Adjusted object
 #' @name adjusted
-#' @format The \code{adjusted} result of adjusting a vector with \code{\link{adjust}}.
 #'
 #'
 #' @section Details: 

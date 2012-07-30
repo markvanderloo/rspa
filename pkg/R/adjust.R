@@ -39,7 +39,8 @@
 #' function keeps iterating until either the tolerance is met, the number of allowed iterations is
 #' exceeded or divergence is detected. 
 #'
-#'
+#' @example ../examples/adjust.R
+#' @result Object of class \code{\link{adjusted}}
 #' @export
 adjust <- function(object, ...){
    UseMethod('adjust')
