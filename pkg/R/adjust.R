@@ -50,7 +50,7 @@ adjust <- function(object, ...){
 #' @param method use dense or sparse matrix method.
 #' @export
 #' @rdname adjust
-adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=100L, method=c('dense','sparse'), ...){
+adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, method=c('dense','sparse'), ...){
 	method <- match.arg(method)
    if (!isNormalized(object)) object <- normalize(object)
 
@@ -90,7 +90,7 @@ adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter
 #' @method adjust sparseConstraints
 #' @export
 #' @rdname adjust
-adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=100L, ...){
+adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
 
    stopifnot(
 		is.numeric(x),
@@ -123,7 +123,7 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 #' @method adjust matrix
 #' @export
 #' @rdname adjust
-adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol=1e-2, maxiter=100L, ...){
+adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
 
    stopifnot(
 		is.numeric(x),
@@ -158,7 +158,7 @@ adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol
    )
    t1 <- proc.time()
 
-   new_adjusted(y, t1-t0, colnames(object))
+   new_adjusted(y, t1-t0,"dense", colnames(object))
 } 
 
 

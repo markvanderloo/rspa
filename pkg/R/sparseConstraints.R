@@ -1,4 +1,3 @@
-
 #' Generate sparse set of constraints.
 #'
 #' @param x R object to be translated to sparseConstraints format.
@@ -130,7 +129,7 @@ make_sc <- function(e){
          as.integer(maxiter)
       )
       t1 <- proc.time()
-      new_adjusted(y,t1-t0, e$getVars())
+      new_adjusted(y,t1-t0, "sparse", e$getVars())
    }
 
    e$diffsum <- function(x){
