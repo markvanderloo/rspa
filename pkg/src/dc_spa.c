@@ -83,12 +83,13 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
       ++niter;
 
 		diff = absmax(conv, awa, neq, m);
-      div = maxdist(xt, x, n);
+ /*     div = maxdist(xt, x, n);
       if (div > div0 + *tol){ // there is no joy in divergence
          exit_status = 2;
          break; 
       }
       for ( int j=0; j<n; xt[j++] = x[j]);
+*/
    }
   
    *tol = dc_diffmax(A, b, x, neq, m, n); // actual max abs diff.

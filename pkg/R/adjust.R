@@ -54,7 +54,7 @@ adjust <- function(object, ...){
 adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, method=c('dense','sparse'), ...){
 	method <- match.arg(method)
    if (!isNormalized(object)) object <- normalize(object)
-
+	object <- reduce(object)
    # match names 
    if ( !is.null(names(x)) ){
       J <- match(getVars(object), names(x))

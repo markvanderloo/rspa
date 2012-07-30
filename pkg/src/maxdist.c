@@ -32,7 +32,7 @@ double dc_diffmax(double *A, double *b, double *x, int neq, int m, int n){
 	for ( int i=0; i < neq; ++i ){
 		ax = 0;
 		for ( int j=0; j < n; ++j ){
-			ax += A[i*m + j]*x[j];
+			ax += A[i + m*j]*x[j];
 		}
 	   d = fabs(ax - b[i]);
 		dmax = d > dmax ? d : dmax;
@@ -41,7 +41,7 @@ double dc_diffmax(double *A, double *b, double *x, int neq, int m, int n){
 	for ( int i=neq; i < m; ++i ){
 		ax = 0;
 		for ( int j=0; j < n; ++j ){
-			ax += A[i*m + j]*x[j];
+			ax += A[i + m*j]*x[j];
 		}
 		d =  ax < b[i]  ? 0 : ax - b[i];
 		dmax =  d > dmax  ? d : dmax;
