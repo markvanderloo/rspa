@@ -1,38 +1,30 @@
-# TODO: MUCH TO SIMPLIFY
-#
-
-### example of Pannekoek and Chun (2012)
-# define constraints ('edits'):
+# define constraints from editmatrix object:
 E <- editmatrix(expression(
-    x1 - x5 + x8 == 0,
-    x5 - x3 - x4 == 0,
-    x8 - x6 - x7 == 0,
-    x4 > 0
+     x1 + x8 ==  950,
+     x3 + x4 ==  950 ,
+     x6 + x7 == x8,
+     x4 > 0
 ))
 
-x <- c(x1=33,x2=2,x3=100,x4=3,x5=95,x6=50,x7=20,x8=70)*10
+# generate sparseConstraints object
+sparseConstraints(E)
 
-# In the reference, variable 'x5' considered ok, and therefore fixed
-E <- substValue(E,'x5',x['x5'])
+# same constraints, from data.frame
+rc <- data.frame( 
+   row = c( 1, 1, 2, 2, 3, 3, 3, 4),
+   col = c( 1, 2, 3, 4, 2, 5, 6, 4),
+  coef = c(-1,-1,-1,-1, 1,-1,-1,-1)
+)
+b <- c(-950, -950, 0,0) 
 
-# generate sparseConstraints objects
-e <- sparseConstraints(E)
-
-I <- match(e$getVars(), names(x))
-
-u <- x[I]
+sparseConstraints(rc, b, neq=3)
 
 
-y <- adjust(e,u, tol=1e-5)
-y
+# same constraints, from dense matrix
 
-## assemble the answer 
-xt <-  x;
-xt[I] <- y$x;
+A <- getA(E)
+b <- getb(E)
+sparseConstraints(A, b, neq=3)
 
-# we can check that the new vector indeed obeys all restrictions (upto the tolerance)
-
-# new vector
-violatedEdits(E,xt, tol=1e-2)
 
 

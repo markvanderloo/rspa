@@ -216,8 +216,8 @@ be saved as a fixed-widht file, for example.
 
 Next, we define a new vector that matches these constraints and adjust it.
 <<>>=
-x_sparse = c(330, 700, 1000, 30, 500, 200) 
-adjust(e, x_sparse)
+x_sparse <- c(330, 700, 1000, 30, 500, 200) 
+(adjust(e, x_sparse))
 @
 Which gives the results as expected.
 

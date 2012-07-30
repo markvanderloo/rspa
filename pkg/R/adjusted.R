@@ -13,10 +13,9 @@
 #'       \item{ \code{\$duration}: \code{proc_time} object showing time it took to run the adjustment. (See \code{proc.time}).}
 #'       \item{ \code{\$niter}: Number of iterations.}
 #'       \item{ \code{\$status}: A \code{character} string stating whether the adjustment was successful (\code{success}), or aborted.}
-#'       \item{ \code{\$method}: \code{'sparse'} or \code{'dense'}.
-#'       }
+#'       \item{ \code{\$method}: \code{'sparse'} or \code{'dense'}.}
+#'    }
 #'
-#'    
 #'
 #'
 {}

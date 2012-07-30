@@ -43,6 +43,34 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
    make_sc(e)
 }
 
+#'
+#'
+#' @method sparseConstraints matrix
+#' @rdname sparseConstraints
+#' @export
+sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
+	stopifnot(
+		all_finite(x),
+		is.numeric(b),
+		all_finite(b),
+		length(b) == nrow(x),
+		is.numeric(neq),
+		is.finite(neq),
+		neq > 0,
+		neq <= length(b),
+		is.numeric(tol),
+		is.finite(tol),
+		tol > 0
+	)
+	storage.mode(x) <- "double"
+	e <- new.env()
+   e$.sc <- .Call("R_sc_from_matrix", x, as.double(x), as.integer(neq), as.double(tol))
+   e$.vars <- colnames(x)
+	make_sc(e)
+	
+}
+
+
 
 #'
 #' @method sparseConstraints data.frame
@@ -57,9 +85,22 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), s
    if (length(b) != length(unique(x[,1]))){
       stop("length of b unequal to number of constraints")
    }
-   if (base > 1){
-      stop("base should be 1 or 0 (does your condition matrix have empty columns?)")
-   }
+	
+	stopifnot(
+		is.numeric(x[,1]),
+		all_finite(x[,1]),
+		is.numeric(x[,2]),
+		all_finite(x[,2]),
+      all(x[,2]>=base),
+		is.numeric(b),
+		all_finite(b),
+      is.numeric(neq),
+		is.finite(neq),
+		neq <= length(b),
+		base %in% c(0,1)
+	)
+
+
 	if ( !sorted ) x <- x[order(x[,1]),,drop=FALSE]
    e <- new.env()
    e$.sc <- .Call("R_sc_from_sparse_matrix", 
