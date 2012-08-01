@@ -8,6 +8,7 @@
 #' @param object an \code{R} object describing constraints (see details)
 #' @param ... Arguments to be passed to other methods
 #'
+#' @return Object of class \code{\link{adjusted}}.
 #'
 #' @section Details:
 #' \code{adjust} is a generic function allowing several definitions of the constraints in \code{object}.
@@ -38,6 +39,13 @@
 #' is set to zero when it's value is lesser than zero (i.e. when the restriction is obeyed). The
 #' function keeps iterating until either the tolerance is met, the number of allowed iterations is
 #' exceeded or divergence is detected. 
+#'
+#' @section Note:
+#' \code{adjust} does not perform any consistency checks. When the system of constraints is
+#' contradictory (\emph{e.g.} \eqn{x>1} and \eqn{x<0}) this will result in either divergence
+#' or in exceeding the number of iterations. 
+#'
+#'
 #'
 #' @example ../examples/adjust.R
 #' @result Object of class \code{\link{adjusted}}

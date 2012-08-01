@@ -1,6 +1,7 @@
 #' Adjusted object
 #' @name adjusted
 #'
+#' @seealso \code{\link{adjust}}
 #'
 #' @section Details: 
 #' A \code{adjusted} object contains the adjusted vector as well as some information on how
@@ -11,7 +12,8 @@
 #'       \item{ \code{\$accuracy}: Maximum deviance of \code{\$x} from the constraints (see \code{\link{adjust}} for details).}
 #'       \item{ \code{\$duration}: \code{proc_time} object showing time it took to run the adjustment. (See \code{proc.time}).}
 #'       \item{ \code{\$niter}: Number of iterations.}
-#'       \item{ \code{\$status}: A \code{character} string stating whether the adjustment was successful (\code{success}), or aborted.}
+#'       \item{ \code{\$status}: A \code{character} string stating whether the adjustment was successful, 
+#'                aborted, or if the maximum number of iterations was reached before convergence. }
 #'       \item{ \code{\$method}: \code{'sparse'} or \code{'dense'}.}
 #'    }
 #'
