@@ -52,7 +52,7 @@ test_that("adjust.matrix",{
 
 test_that("adjust notes exceeding maxiter"){
    e <- editmatrix(expression(x < -1, x > 0))
-   expect_true(grep("maximum",adjust(e,0)))
+   expect_true(grep("maximum",adjust(e,0))==1)
 }
 
 
