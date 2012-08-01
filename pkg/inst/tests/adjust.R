@@ -50,5 +50,11 @@ test_that("adjust.matrix",{
    expect_error( adjust(A,b,c(0,0,0),neq=neq) )
 })
 
+test_that("adjust notes exceeding maxiter"){
+   e <- editmatrix(expression(x < -1, x > 0))
+   expect_true(grep("maximum",adjust(e,0)))
+}
+
+
 
 
