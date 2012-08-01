@@ -45,7 +45,8 @@ new_adjusted <- function(x, duration, method, varnames=NULL){
    statusLabels = c(
       "success",
       "aborted: could not allocate enough memory",
-      "aborted: divergence detected"
+      "aborted: divergence detected",
+      "maximum number of iterations reached"
    ) 
    acc = attr(x,"accuracy")
    nit = attr(x,"niter")

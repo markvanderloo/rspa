@@ -47,15 +47,14 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
    int niter;
 
    double *awa = (double *) calloc(m, sizeof(double)); if (awa==0) return 1;
-   double *xt = (double *) calloc(n, sizeof(double));     
    double *xw = (double *) calloc(n, sizeof(double));
    double *alpha = (double *) calloc(m, sizeof(double));
    double *wa = (double *) calloc(n, sizeof(double));
 	double *conv = (double *) calloc(m, sizeof(double));
 
    // in case of emergency: wee haave too get autofhea (Schwartzenegger style)
-   if ( awa == 0 || xt == 0 || xw == 0|| alpha == 0|| conv == 0 || wa == 0 ){ 
-      free(awa); free(xt); free(xw); free(alpha); free(conv); free(wa);
+   if ( awa == 0 || xw == 0|| alpha == 0|| conv == 0 || wa == 0 ){ 
+      free(awa); free(xw); free(alpha); free(conv); free(wa);
       return 1;
    }
    double diff = DBL_MAX; 
@@ -72,35 +71,26 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
       }
    }
 
-   for ( int i=0; i<n; xt[i++]=x[i] );
 
-	double div=DBL_MAX, div0;
    while ( diff > *tol && niter < *maxiter ){
-		div0 = div;
 
       for (int k=0; k<neq; k++) update_x_k_eq(A, b, x, m, n, xw, wa, awa[k], k, conv);
       for (int k=neq; k<m; k++) update_x_k_in(A, b, x, m, n, xw, wa, alpha, awa[k], k, conv);
       ++niter;
 
-		diff = absmax(conv, awa, neq, m);
- /*     div = maxdist(xt, x, n);
-      if (div > div0 + *tol){ // there is no joy in divergence
-         exit_status = 2;
-         break; 
+      if ( diverged(x,n) || diverged(alpha,m) ){
+         exit_status = 2; 
+         break;
       }
-      for ( int j=0; j<n; xt[j++] = x[j]);
-*/
+		diff = absmax(conv, awa, neq, m);
    }
+   // number of iterations exceeded without convergence?
+   if (exit_status != 2 && niter == maxiter[0] && diff > tol[0] ) exit_status = 3;
   
    *tol = dc_diffmax(A, b, x, neq, m, n); // actual max abs diff.
    *maxiter = niter;
-   free(wa);
-   free(awa);
-   free(xt);
-   free(xw);
-   free(alpha);
-	free(conv);
 
+   free(wa); free(awa); free(xw); free(alpha); free(conv);
    return exit_status;
 }
 

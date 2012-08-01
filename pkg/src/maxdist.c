@@ -1,6 +1,6 @@
 
 
-#include "math.h"
+#include <math.h>
 
 // computes ||x-y||_Inf
 double maxdist(double *x, double *y, int n){
@@ -27,6 +27,7 @@ double absmax(double *conv, double *awa, int neq, int nconstraints){
 	return dmax;
 }
 
+// d = Ax-b for equalities eps=|d|, for inequalities eps=(|d|+d)/2. returns max(eps)
 double dc_diffmax(double *A, double *b, double *x, int neq, int m, int n){
 	double ax, d, dmax=0;
 	for ( int i=0; i < neq; ++i ){
@@ -50,6 +51,13 @@ double dc_diffmax(double *A, double *b, double *x, int neq, int m, int n){
 	return dmax;
 }
 
+
+int diverged(double *x, int n){
+   for (int i=0; i<n; ++i){
+      if (!isfinite(x[i])) return 1;
+   }
+   return 0;
+}
 
 
 
