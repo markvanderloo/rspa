@@ -124,33 +124,29 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), s
 #' @export
 #' @rdname sparseConstraints
 print.sparseConstraints <- function(x, range=1L:10L, ...){
-   x$print()
+   x$.print()
 }
 
 # e: environment containing an R_ExternalPtr
 make_sc <- function(e){
    #
    
-   e$pointer <- function(){
+   e$.pointer <- function(){
       e$.sc
    }
    
-   e$nvar <- function(){
+   e$.nvar <- function(){
       .Call("R_get_nvar", e$.sc)
    }
 
-   e$nconstr <- function(){
+   e$.nconstr <- function(){
       .Call("R_get_nconstraints", e$.sc)
    }
    
-   e$getVars <- function(){
-     e$.vars
-   }  
-
-   e$print <- function(range){
-      if ( missing(range) & e$nvar() > 10 ) range = numeric(0)
-      if ( missing(range) & e$nvar() <=10 ) range = 1L:10L
-      vars = e$getVars()
+   e$.print <- function(range){
+      if ( missing(range) & e$.nvar() > 10 ) range = numeric(0)
+      if ( missing(range) & e$.nvar() <=10 ) range = 1L:10L
+      vars = e$.vars
       if ( is.null(vars) ) vars = character(0);
 
       stopifnot(all(range >= 1))
@@ -170,26 +166,26 @@ make_sc <- function(e){
          as.integer(maxiter)
       )
       t1 <- proc.time()
-      new_adjusted(y,t1-t0, "sparse", e$getVars())
+      new_adjusted(y,t1-t0, "sparse", e$.vars)
    }
 
-   e$diffsum <- function(x){
-      stopifnot(length(x)==e$nvar())
+   e$.diffsum <- function(x){
+      stopifnot(length(x)==e$.nvar())
       .Call("R_sc_diffsum", e$.sc, as.double(x)) 
    }
 
-   e$diffmax <- function(x){
-      stopifnot(length(x)==e$nvar())
+   e$.diffmax <- function(x){
+      stopifnot(length(x)==e$.nvar())
       .Call("R_sc_diffmax", e$.sc, as.double(x)) 
    }
 
-   e$multiply <- function(x){
-      stopifnot(length(x) == e$nvar());
+   e$.multiply <- function(x){
+      stopifnot(length(x) == e$.nvar());
       .Call("R_sc_multvec", e$.sc, as.double(x))
    }
 
-   e$diffvec <- function(x){
-      stopifnot(length(x) == e$nvar())
+   e$.diffvec <- function(x){
+      stopifnot(length(x) == e$.nvar())
       .Call("R_sc_diffvec", e$.sc, as.double(x))
    }
 

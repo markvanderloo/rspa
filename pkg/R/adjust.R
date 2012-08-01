@@ -96,7 +96,7 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 
    stopifnot(
 		is.numeric(x),
-		length(x) == object$nvar(),
+		length(x) == object$.nvar(),
       all_finite(x),
       length(w) == length(x),
       is.numeric(w),
