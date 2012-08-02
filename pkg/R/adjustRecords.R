@@ -1,6 +1,7 @@
 
-
+# adjust multiple records
 adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat))), ...){
+
 
 	
 	out <- t(dat)
@@ -40,5 +41,9 @@ adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat)))
 		)
 	)
 }
+
+
+
+
 
 
