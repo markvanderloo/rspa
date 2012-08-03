@@ -1,3 +1,15 @@
+# make ordered status vector
+new_status <- function(n){
+   ordered(n+1,
+      levels=c(
+         "success",
+         "could not allocate enough memory",
+         "divergence detected",
+         "maximum number of iterations reached"
+      )
+   )
+}
+
 #' Adjusted object
 #' @name adjusted
 #'
@@ -44,15 +56,9 @@ print.adjusted <- function(x, maxprint = 10, ...){
 # create 'adjusted' object. Input is a solution vector 
 # with attributes, returned by "R_sc_solve_spa" or "R_dc_solve_spa"
 new_adjusted <- function(x, duration, method, varnames=NULL){
-   statusLabels = c(
-      "success",
-      "aborted: could not allocate enough memory",
-      "aborted: divergence detected",
-      "maximum number of iterations reached"
-   ) 
    acc = attr(x,"accuracy")
    nit = attr(x,"niter")
-   status = statusLabels[attr(x,"status")+1]
+   status = new_status(attr(x,"status"))
    attr(x,"accuracy") <- NULL
    attr(x,"niter")    <- NULL
    attr(x,"status")   <- NULL
