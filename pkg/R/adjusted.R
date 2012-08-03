@@ -1,13 +1,13 @@
 # make ordered status vector
 new_status <- function(n){
-   ordered(n+1,
-      levels=c(
-         "success",
-         "could not allocate enough memory",
-         "divergence detected",
-         "maximum number of iterations reached"
-      )
+   statuslabels=c(
+      "success",
+      "could not allocate enough memory",
+      "divergence detected",
+      "maximum number of iterations reached"
    )
+   ordered(statuslabels[n+1], levels=statuslabels )
+  
 }
 
 #' Adjusted object
@@ -22,6 +22,7 @@ new_status <- function(n){
 #'    \itemize{
 #'       \item{ \code{\$x}: the adjusted vector.}
 #'       \item{ \code{\$accuracy}: Maximum deviance of \code{\$x} from the constraints (see \code{\link{adjust}} for details).}
+#'       \item{ \code{objective} : Square root of objective function \eqn{\sum <- i(x_i-x^0_i)^2w <- i}.}
 #'       \item{ \code{\$duration}: \code{proc_time} object showing time it took to run the adjustment. (See \code{proc.time}).}
 #'       \item{ \code{\$niter}: Number of iterations.}
 #'       \item{ \code{\$status}: A \code{character} string stating whether the adjustment was successful, 
@@ -45,6 +46,7 @@ print.adjusted <- function(x, maxprint = 10, ...){
     cat("Object of class 'adjusted'\n")
     cat(sprintf("  Status    : %s (using '%s' method)\n", x$status, x$method))
     cat(sprintf("  Accuracy  : %g\n", x$accuracy))
+    cat(sprintf("  Objective : %g\n", x$objective))
     cat(sprintf("  Iterations: %d\n", x$niter))
     cat(sprintf("  Timing (s): %g\n", x$duration['elapsed']))
     tr = ":";
@@ -55,7 +57,7 @@ print.adjusted <- function(x, maxprint = 10, ...){
 
 # create 'adjusted' object. Input is a solution vector 
 # with attributes, returned by "R_sc_solve_spa" or "R_dc_solve_spa"
-new_adjusted <- function(x, duration, method, varnames=NULL){
+new_adjusted <- function(x, duration, method, objective, varnames=NULL){
    acc = attr(x,"accuracy")
    nit = attr(x,"niter")
    status = new_status(attr(x,"status"))
@@ -64,7 +66,7 @@ new_adjusted <- function(x, duration, method, varnames=NULL){
    attr(x,"status")   <- NULL
    names(x) <- varnames
    structure(
-      list(x = x, accuracy = acc, method=method, niter = nit, duration=duration, status=status ),
+      list(x = x, accuracy = acc, objective=objective, method=method, niter = nit, duration=duration, status=status ),
       class = "adjusted"
    )   
 }

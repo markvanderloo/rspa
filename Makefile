@@ -4,7 +4,7 @@
 CC = gcc
 CFLAGS = -std=gnu99 -I/bin/R/R-2.15.0/include -DNDEBUG  -I/usr/local/include -fpic  -g -O2 
 OBJS = \
- all_finite.o\
+ R_all_finite.o\
  dc_spa.o\
  maxdist.o\
  R_dc_spa.o\
@@ -20,7 +20,7 @@ rspa : $(OBJS)
 
 
 all_finite.o            :     all_finite.c
-	$(CC) $(CFLAGS) -c all_finite.c -o all_finite.o
+	$(CC) $(CFLAGS) -c R_all_finite.c -o R_all_finite.o
 
 dc_spa.o                :     dc_spa.c              
 	$(CC) $(CFLAGS) -c dc_spa.c -o dc_spa.o

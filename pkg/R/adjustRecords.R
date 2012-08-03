@@ -8,12 +8,14 @@
 #' @param adjust a \code{nrow(dat) x ncol(dat)} boolean array, indicating which fields 
 #'        must be adjusted.
 #' @param w a vector of length \code{ncol(dat)} or array of size \code{adjust} with adjustment weights.
+#' @param verbose  print progress to console
 #' @param ... extra options, passed through to \code{\link{adjust}}
+#'
 #' @seealso \code{\link{adjust}} 
 #'
 #' @return An object of class \code{adjustedRecords}
 #' @export
-adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat))), ... ){
+adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat))), verbose=FALSE, ... ){
    stopifnot(
       all(dim(adjust) == dim(dat)),
       all(dim(w) == dim(dat)),
@@ -27,34 +29,34 @@ adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat)))
    B <- blocks(E)
    status = NULL
    for ( i in 1:length(B) ){
-      cat(sprintf("adjusting block %4d of %4d\n",i, length(B)))
+      if (verbose ) cat(sprintf("adjusting block %4d of %4d\n",i, length(B)))
       e <- B[[i]]
       vars <- nm[nm %in% getVars(e)]
-      adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE]) 
+      adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE], verbose=verbose) 
       dat[vars] <- adj$adjusted
       status <- status %++% adj$status 
    }
 
-   structure(list(dat, status), class="adjustedRecords")
+   structure(list(adjusted=dat, status=status), class="adjustedRecords")
 
 }
 
 
 
-adjustBlock <- function(E, dat, adjust, w, ...){
+adjustBlock <- function(E, dat, adjust, w, verbose, ...){
 
 	out <- t(dat)
 	n <- nrow(dat)
 	acc <- numeric(n)
+   obj <- numeric(n)
 	tpl <- editrules:::getDuration(proc.time())
 	dur <- array(0,dim=c(n,length(tpl)))
 	colnames(dur) <- names(tpl)
 	nit <- numeric(n)
 	status <- new_status(rep(NA,n))
 
-	cat("\n")
 	for ( i in 1:nrow(dat) ){
-		cat( sprintf("\rAdjusting record %4d / %d ",i,n))
+		if( verbose ) cat( sprintf("\r          record %4d / %d ",i,n))
 		r <- do.call(c,as.list(dat[i,]))
 		J <- adjust[i,]
 		if (!any(J)) next
@@ -63,17 +65,19 @@ adjustBlock <- function(E, dat, adjust, w, ...){
 		y <- adjust(e, r[J],...)
 		out[J,i]    <- y$x
 		acc[i]      <- y$accuracy
+      obj[i]      <- y$objective
 		dur[i,]     <- editrules:::getDuration(y$duration)
 		status[i]   <- y$status
 		nit[i]      <- y$niter
 		status[i]   <- y$status
 	}
-   cat("\n")
+   if(verbose) cat("\n")
 
 	list(
 		adjusted = as.data.frame(t(out)),
 		status = data.frame(
 			accuracy = acc,
+         objective = obj,
 		   niter    = nit,
 			status   = status,
 			dur

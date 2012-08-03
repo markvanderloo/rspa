@@ -166,7 +166,8 @@ make_sc <- function(e){
          as.integer(maxiter)
       )
       t1 <- proc.time()
-      new_adjusted(y,t1-t0, "sparse", e$.vars)
+      objective <- sqrt(sum((x-as.vector(y))^2*w))
+      new_adjusted(y,t1-t0, "sparse", objective, e$.vars)
    }
 
    e$.diffsum <- function(x){

@@ -167,8 +167,8 @@ adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol
       as.double(x)
    )
    t1 <- proc.time()
-
-   new_adjusted(y, t1-t0,"dense", colnames(object))
+   objective <- sqrt(sum(w*(x-as.vector(y))^2))
+   new_adjusted(y, t1-t0,"dense", objective, colnames(object))
 } 
 
 
