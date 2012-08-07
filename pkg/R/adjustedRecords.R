@@ -61,7 +61,10 @@ summary.adjustedRecords <- function(object,...){
 #' @rdname adjustedRecords
 #' @export
 plot.adjustedRecords <- function(x,...){
-
+   if (nrow(x$adjusted) <= 1 ){
+		cat("Nothing to plot...\n")
+		return();
+	}
 
 	par(mfrow=c(2,1),mar=c(2,4,4,1))
 	lwd = '2'
