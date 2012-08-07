@@ -2,10 +2,21 @@
 #' @name adjustedRecords
 #' @seealso \code{\link{adjustRecords}}
 #' @section Details:
-#' todo
+#' The \code{adjustedRecords} object contains adjusted data as well as some information 
+#' on the adjusting process. In particular:
+#' \itemize{
+#'		\item{\code{\$adjusted}: \code{data.frame} similar to \code{dat} with adjusted values.}
+#'	
+#'    \item{\code{$status}: \code{data.frame} with the same number of rows as \code{dat}. Each row
+#'			stores the information of one \code{\link{adjusted}} object.}
+#' }
+#'
+#' When printed, only the first 10 rows of \code{cbind(adjusted, status)} are shown. Use \code{summary}
+#' for a quick overview. The \code{plot} method shows kernel density estimates of the accuracy and
+#' objective functions. To avoid densities at values below 0, the accuracy densities are evaluated
+#' under a sqrt-transform and transformed back before plotting. For the objective function values
+#' a log-transform is used.
 #' 
-#' 
-#' @seealso \code{\link{adjustRecords}}
 {}
 
 
@@ -21,6 +32,64 @@ print.adjustedRecords <- function(x,...){
       cbind(x$adjusted[I,],x$status[I,])
    )
    if ( nrow(x$adjusted)>10 ) cat("print truncated...\n")
+}
+
+
+#' @method summary adjustedRecords
+#' @param object object of class \code{adjustedRecords}
+#' @rdname adjustedRecords
+#' @export
+summary.adjustedRecords <- function(object,...){
+	cat("Object of class 'adjustedRecords'\n")
+
+   lv <- levels(object$status$status)
+	nsuccess <- sum(object$status$status == lv[1],na.rm=TRUE)
+	p <- list()
+	p[[1]] <- sprintf(" Records : %d\n",nrow(object$adjusted))
+	p[[2]] <- sprintf(" Adjusted: %d (%d converged) \n",sum(!is.na(object$status$status)),nsuccess)
+	p[[3]] <- sprintf(" duration: %gs (total)\n",sum(object$status$elapsed)) 
+	p[[4]] <- ""
+	p[[5]] <- "Summary of adjusted records:\n"
+	d <- lapply(p,cat)
+	iadj <- !is.na(object$status$status)
+   print(summary(object$status[iadj,c('objective','accuracy')]))
+}
+
+
+#'
+#' @method plot adjustedRecords
+#' @rdname adjustedRecords
+#' @export
+plot.adjustedRecords <- function(x,...){
+
+
+	par(mfrow=c(2,1),mar=c(2,4,4,1))
+	lwd = '2'
+
+	a <- x$status$accuracy[x$status$accuracy > 0]
+	d <- density(sqrt(a))
+
+	plot(d$x*d$x,d$y+.Machine$double.eps,
+		main= sprintf("Accuracy (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+		ylab='density',
+		xlab='',
+	   type='l',
+		lwd=lwd
+	)
+	rug(a,col="blue")
+
+	a <- x$status$objective[x$status$objective > 0]
+	d <- density(log(a))
+	plot(exp(d$x),d$y+.Machine$double.eps,
+		main= sprintf("Objective function (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+		ylab='density',
+		xlab='',
+	   type='l',
+		lwd=lwd,
+		log='x'
+	)
+	rug(a,col="blue")
+
 }
 
 

@@ -11,17 +11,33 @@
 #' @param verbose  print progress to console
 #' @param ... extra options, passed through to \code{\link{adjust}}
 #'
+#'
+#' @section Details:
+#' This function is not written to be especiallty speedy or memory-efficient, but to offer a
+#' convenient interface to adjusting a \code{data.frame} of records.
+#'
+#'
+#'
 #' @seealso \code{\link{adjust}} 
 #'
 #' @return An object of class \code{adjustedRecords}
 #' @export
-adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat))), verbose=FALSE, ... ){
+adjustRecords <- function(E, dat, adjust, w=rep(1,ncol(dat)), verbose=FALSE, ... ){
+	if (is.vector(w)){ 
+		stopifnot(length(w) == ncol(dat))
+		w <- t(array(w,dim=dim(dat)))
+		colnames(w) <- names(dat)
+	}
+		
    stopifnot(
       all(dim(adjust) == dim(dat)),
-      all(dim(w) == dim(dat)),
-      all(getVars(E) %in% names(dat))
+      all(getVars(E) %in% names(dat)),
+	   all_finite(w),
+		all_finite(adjust),
+      all(w>0),
+		all(dim(w) == dim(dat)),
    )
-
+	
    nm <- names(dat)
    if ( is.null(colnames(adjust)) ) colnames(adjust) <- nm
    if ( is.null(colnames(w)) ) colnames(w) <- nm 
@@ -31,6 +47,7 @@ adjustRecords <- function(E, dat, adjust, w=array(1,dim=c(nrow(dat), ncol(dat)))
    for ( i in 1:length(B) ){
       if (verbose ) cat(sprintf("adjusting block %4d of %4d\n",i, length(B)))
       e <- B[[i]]
+		
       vars <- nm[nm %in% getVars(e)]
       adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE], verbose=verbose) 
       dat[vars] <- adj$adjusted

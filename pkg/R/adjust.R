@@ -48,7 +48,6 @@
 #'
 #'
 #' @example ../examples/adjust.R
-#' @return Object of class \code{\link{adjusted}}
 #' @export
 adjust <- function(object, ...){
    UseMethod('adjust')

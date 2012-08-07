@@ -1,11 +1,18 @@
-# make ordered status vector
-new_status <- function(n){
-   statuslabels=c(
+
+STATUSLEVELS <- data.frame(
+	short = c("success","no memory","diverges","max iterations"),
+	long =  c(
       "success",
       "could not allocate enough memory",
       "divergence detected",
       "maximum number of iterations reached"
-   )
+   ),
+	stringsAsFactors=FALSE
+)
+
+# make ordered status vector
+new_status <- function(n){
+   statuslabels=STATUSLEVELS['long']
    ordered(statuslabels[n+1], levels=statuslabels )
   
 }
@@ -22,7 +29,7 @@ new_status <- function(n){
 #'    \itemize{
 #'       \item{ \code{\$x}: the adjusted vector.}
 #'       \item{ \code{\$accuracy}: Maximum deviance of \code{\$x} from the constraints (see \code{\link{adjust}} for details).}
-#'       \item{ \code{objective} : Square root of objective function \eqn{\sum <- i(x_i-x^0_i)^2w <- i}.}
+#'       \item{ \code{\$objective} : Square root of objective function \eqn{\sum_i(x_i-x^0_i)^2w_i}.}
 #'       \item{ \code{\$duration}: \code{proc_time} object showing time it took to run the adjustment. (See \code{proc.time}).}
 #'       \item{ \code{\$niter}: Number of iterations.}
 #'       \item{ \code{\$status}: A \code{character} string stating whether the adjustment was successful, 
