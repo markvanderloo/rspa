@@ -22,7 +22,7 @@
 \DeclareRobustCommand{\VAN}[3]{#2}
 
 
-\title{Getting started with \code{rspa}\\
+\title{The \code{rspa} package\\
   {\small Package version \Sexpr{packageVersion("rspa")}}
 }
 \author{Mark van der Loo}
@@ -50,21 +50,64 @@ library(editrules)
 \maketitle
 
 \begin{abstract}
-This package offers functionality to minimally adjust a vector $\bs{x}$ such
-that it obeys the system of (in)equations $\bs{Ax}\leq \bs{b}$.  The package
-implements the the successive projection algorithm of \cite{pannekoek:2012}.
-The are are several ways to define what ``minimal'' means here, and the package
-allows for fairly large systems of equations.  Thus far it has been tested on
-systems with on the order of $10^5-10^6$ variables and $10^4-10^5$
-restrictions. Convergence is usually reached within seconds.
+The \code{R} extension package \code{rspa} offers functionality to minimally
+adjust a vector $\bs{x}$ such that it obeys the system of (in)equations
+$\bs{Ax}\leq \bs{b}$. The package implements the successive projection
+algorithm of \cite{pannekoek:2012}.  The are are several ways to define what
+``minimal'' means here, and the package allows for fairly large systems of
+equations.  Thus far it has been tested on systems with on the order of
+$10^5-10^6$ variables and $10^4-10^5$ restrictions. Convergence is usually
+reached within seconds.
 \end{abstract}
 
 \tableofcontents
 
 \newpage
 
+\section{Introduction}
+In statistics one is often confronted with records or sets of estimated values
+that have to obey a set of linear equations and/or inequations. Examples
+include records from business surveys that have to obey accountancy rules or
+production-consumption balances for national account systems.  In practice,
+such data seldom obeys all restrictions leading to further inconsistencies
+when the data is used as input for further analyses. One solution is to
+minimally adjust the data so that all restrictions are obeyed. 
+
+Here, with minimal adjustment we mean that a record $\bs{x}^0\in\mathbb{R}^n$ is replaced
+with a value $\bs{x}$ such that the objective function
+\begin{equation}
+d(\bs{x},\bs{x}^0) = \left[(\bs{x} - \bs{x}^0)'\bs{W}(\bs{x}-\bs{x}^0)\right]^{1/2},
+\end{equation}
+is minimized as a function of $\bs{x}$, subject to 
+\begin{equation}
+\bs{Ax} \leq \bs{b}.
+\label{eq:restrictions}
+\end{equation}
+Here, $\bs{W}$ is a diagonal positive weight matrix. 
+
+Note that this problem has a simple geometric interpretation. The system $\bs{Ax}\leq \bs{b}$
+describes a convex region of $\mathbb{R}^n$ (possibly of lower dimension than $n$). The problem
+is to replace the vector $\bs{x}^0$ outside this region with a record $\bs{x}$ lying in it while
+keeping the distance between $\bs{x}$ and $\bs{x}^0$ as small as possible. The distance is measured
+with $d(\bs{x},\bs{x}^0)$.
+
+Recently, \cite{pannekoek:2012} have published an algorithm which efficiently
+finds $\bs{x}$.  This so-called {\rm successive projection algorithm} is
+implemented in the \code{rspa} package. It minimizes $d(\bs{x},\bs{x}^0)$ as a function
+of $\bs{x}$ so that the restrictions are obeyed up to a certain {\em accuracy}.
+This accuracy is defined as the maximum absolute deviance from Eq.\ \eqref{eq:restrictions}
+and will be defined more precisely in Section \ref{sect:algorithm}.
+
+
+The rest of this paper is structured
+as follows. In Sections \ref{sect:simpleexample} to \ref{sect:largeproblems} we
+demonstrate some of the package's core functionality. Sections \ref{sect:algorithm}
+and \ref{sect:implementation} provide some details on the inner workings of the
+package which may help users to interpret the results. 
+
+
 \section{A simple example}
-\label{sect:example}
+\label{sect:simpleexample}
 The following example is borrowed from \cite{pannekoek:2012} and involves
 profit-loss account balances from a business survey. The problem described in
 the reference involves a record of eight variables $x_1\ldots x_8$ that have
@@ -120,7 +163,7 @@ constraints (\code{reduce}).
 E <- reduce(substValue(E,'x5',x['x5']))
 @
 %
-Adjusting $\bs{x}$ so it meets the constratints can be done as follows.
+Adjusting $\bs{x}$ so it meets the constraints can be done as follows.
 <<>>=
 (y <- adjust(E, x))
 @
@@ -142,17 +185,78 @@ named, they will automatically be matched so the order of variables is unimporta
 \end{itemize} 
 The \code{adjust} function is a generic function and it accepts constraints in
 \code{matrix}, \code{sparseConstraints} or \code{editmatrix} format. For small
-adjustment problems, up to say a few hundred variables and constrainsts, the
+adjustment problems, up to say a few hundred variables and constraints, the
 \code{matrix} or \code{editmatrix} format will be fine. Large problems, with
 thousands of variables and restrictions can be defined in sparse format and
 the adjustment problem is solved with a routine for sparse adjustment.
 
 
+\section{Treating many records}
+\label{sect:manyrecords}
+To facilitate production-wise processing of many records, the function
+\code{adjustRecords} can adjust all records in a \code{data.frame} to meet
+the same set of rules. The output contains the adjusted records as well
+as logging information.
+
+As an example, we create a new set of rules and generate some random data.
+<<>>=
+F <- editmatrix(expression(
+	x + y == z,
+   x >= 0,
+	y >= 0,
+	z >=0
+))
+N <- 100
+dat <- data.frame(
+	x = runif(100),
+	y = rnorm(100),
+	z = rlnorm(100)
+)
+@
+By construction, it is very unlikely that all generated data obey the rules in
+\code{F}.  To adjust the data, a single call to \code{adjustRecords} is
+sufficient.
+<<>>=
+A <- adjustRecords(F,dat)
+summary(A)
+@
+By default, all variables in \code{dat} are adjusted to meet the rules in
+\code{F}.  However, one can optionally pass an array indicating which variables
+to adjust.  It is also possible to pass (an \code{array} or \code{vector} of)
+weights to control the relative amount of change per variable. The return value
+of \code{adjustRecords} is an object of class \code{adjustedValues}. It
+contains the adjusted records in \code{A\$adjusted} and a \code{data.frame}
+collecting status information in \code{A\$status}.
+\begin{figure}
+<<>>=
+plot(A)
+@
+\caption{Plotting an object of class \code{adjustedRecords} yields a density plot of the
+accuracy (deviance from constraints) and objective function value per record.}
+\label{fig:adjustedRecords}
+\end{figure}
+
+
+The \code{R} generic \code{summary} and \code{plot} functions have been overloaded
+to get a quick glance of result quality and amount of change from the original data.
+Figure \ref{fig:adjustedRecords} shows the result of plotting \code{A} of the
+above example. Two plots are created. The top panel shows a kernel density estimate of 
+the accuracy values for each record. The lower panel shows a kernel density estimate
+of the objective function value. The actual values are shown as a ``rug plot'' under
+the density plots. 
+
+It is well-known that kernel density estimates can extrapolate into regions
+where the actual probability density equals zero. Here, we need to make sure
+that the estimated probability density for accuracy or objective function
+equals zero for values $<0$. This is achieved by estimating the accuracy
+density under a square root transform, and transforming back for graphical
+representation. For the objective function a $\log$-transform is applied.
 
 
 
 
 \section{Treating large problems}
+\label{sect:largeproblems}
 For problems where $\bs{x}$ has many coefficients and when there are many restrictions,
 the package includes an adjustment algorithm based on a sparse representation of the
 restrictions. In a sparse representation, elements of the restriction matrix $\bs{A}$
@@ -198,7 +302,7 @@ By passing the argument \code{sorted=TRUE}, we tell \code{sparseConstraints}
 that the input \code{data.frame} is sorted increasingly by column number (so it
 does not have to sort it again). The function detected here that row- and
 column indices are ``base 1'' (the lowest value equals 1). It is also possible
-to pass coefficient definitions wich are base 0. Note that we did not feed
+to pass coefficient definitions which are base 0. Note that we did not feed
 \code{sparseConstraints} any names, so it makes up some names to represent the
 rules in textual form. 
 
@@ -212,7 +316,7 @@ The external object is destroyed by \code{R}'s garbage collector when \code{R}
 closes, or when the \code{sparseConstraints} object is deleted or overwritten.
 \end{itemize}
 In a future version we might add a export option so that such objects can
-be saved as a fixed-widht file, for example.
+be saved as a fixed-width file, for example.
 
 Next, we define a new vector that matches these constraints and adjust it.
 <<>>=
@@ -233,7 +337,7 @@ The algorithm solves the following minimization problem
 s.t. &\: &\nonumber\\
 \bs{Ax} &\leq& \bs{b},
 \end{eqnarray}
-where $\bs{W}$ is a diagonal weight matrix. By default, al weights are chosen
+where $\bs{W}$ is a diagonal weight matrix. By default, all weights are chosen
 equal to $1$ in the package. The weights must be larger than zero. In words,
 the algorithm finds the vector with the smallest (weighted) Euclidian distance
 from the starting vector $\bs{x}^0$ that obeys the restrictions.
@@ -268,6 +372,7 @@ In other words: the algorithm terminates when the largest deviation from any of 
 
 
 \section{Some notes on implementation}
+\label{sect:implementation}
 The algorithm of \cite{pannekoek:2012} has been implemented twice in this package.
 Both implementations run as compiled \code{C} code which is linked to \code{R}.
 The first implementation uses a dense matrix representation, and is called by
@@ -284,7 +389,16 @@ The \code{sparseConstraints} object is represented under the hood as a \code{C}
 closes.
 
 
+\section{Conclusion}
+With the \code{R} extension package \code{rspa}, we have made the successive
+projection algorithm of \code{pannekoek:2012} available for \code{R} users. In
+this paper we demonstrate how (lots of) small adjustments problems can
+conveniently be solved using a \code{editmatrix} definition of rules while
+large problems can be solved using a sparse representation of the problem.
 
+Future work may include extending the package to allow for the weight matrix
+$\bs{W}$ to be non-diagonal and the possibility to read large problems from
+multiple formats.
 
 
 

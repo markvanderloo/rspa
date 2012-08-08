@@ -22,7 +22,7 @@
 #'
 #' @return An object of class \code{adjustedRecords}
 #' @export
-adjustRecords <- function(E, dat, adjust, w=rep(1,ncol(dat)), verbose=FALSE, ... ){
+adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(dat)), verbose=FALSE, ... ){
 	if (is.vector(w)){ 
 		stopifnot(length(w) == ncol(dat))
 		w <- t(array(w,dim=dim(dat)[2:1]))
