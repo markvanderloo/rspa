@@ -25,7 +25,7 @@
 adjustRecords <- function(E, dat, adjust, w=rep(1,ncol(dat)), verbose=FALSE, ... ){
 	if (is.vector(w)){ 
 		stopifnot(length(w) == ncol(dat))
-		w <- t(array(w,dim=dim(dat)))
+		w <- t(array(w,dim=dim(dat)[2:1]))
 		colnames(w) <- names(dat)
 	}
 		
@@ -33,9 +33,10 @@ adjustRecords <- function(E, dat, adjust, w=rep(1,ncol(dat)), verbose=FALSE, ...
       all(dim(adjust) == dim(dat)),
       all(getVars(E) %in% names(dat)),
 	   all_finite(w),
-		all_finite(adjust),
+		is.logical(adjust),
+		sum(is.na(adjust))==0,
       all(w>0),
-		all(dim(w) == dim(dat)),
+		all(dim(w) == dim(dat))
    )
 	
    nm <- names(dat)

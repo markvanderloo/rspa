@@ -61,6 +61,7 @@ summary.adjustedRecords <- function(object,...){
 #' @rdname adjustedRecords
 #' @export
 plot.adjustedRecords <- function(x,...){
+
    if (nrow(x$adjusted) <= 1 ){
 		cat("Nothing to plot...\n")
 		return();
@@ -69,29 +70,43 @@ plot.adjustedRecords <- function(x,...){
 	par(mfrow=c(2,1),mar=c(2,4,4,1))
 	lwd = '2'
 
-	a <- x$status$accuracy[x$status$accuracy > 0]
-	d <- density(sqrt(a))
 
-	plot(d$x*d$x,d$y+.Machine$double.eps,
-		main= sprintf("Accuracy (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
-		ylab='density',
-		xlab='',
-	   type='l',
-		lwd=lwd
-	)
-	rug(a,col="blue")
+   
+	a <- x$status$accuracy[x$status$accuracy > 0]
+  
+	if ( length(a) >=2 ){
+		d <- density(sqrt(a))
+		plot(d$x*d$x,d$y+.Machine$double.eps,
+			main= sprintf("Accuracy (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+			ylab='density',
+			xlab='',
+			type='l',
+			lwd=lwd
+		)
+		rug(a,col="blue")
+	} else {
+		plot.new()
+		text(0.5,0.5,"too few points to plot density")
+	}
 
 	a <- x$status$objective[x$status$objective > 0]
-	d <- density(log(a))
-	plot(exp(d$x),d$y+.Machine$double.eps,
-		main= sprintf("Objective function (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
-		ylab='density',
-		xlab='',
-	   type='l',
-		lwd=lwd,
-		log='x'
-	)
-	rug(a,col="blue")
+	if ( length(a) >= 2 ){
+		d <- density(log(a))	
+		plot(exp(d$x),d$y+.Machine$double.eps,
+			main= sprintf("Objective function (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+			ylab='density',
+			xlab='',
+			type='l',
+			lwd=lwd,
+			log='x'
+		)
+		rug(a,col="blue")
+	} else {
+		
+		plot.new()
+		text(0.5,0.5,"too few points to plot density")
+	
+	}
 
 }
 

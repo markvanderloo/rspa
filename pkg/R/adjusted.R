@@ -12,7 +12,7 @@ STATUSLEVELS <- data.frame(
 
 # make ordered status vector
 new_status <- function(n){
-   statuslabels=STATUSLEVELS['long']
+   statuslabels=STATUSLEVELS[,'long']
    ordered(statuslabels[n+1], levels=statuslabels )
   
 }
