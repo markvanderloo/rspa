@@ -53,11 +53,11 @@ library(editrules)
 The \code{R} extension package \code{rspa} offers functionality to minimally
 adjust a vector $\bs{x}$ such that it obeys the system of (in)equations
 $\bs{Ax}\leq \bs{b}$. The package implements the successive projection
-algorithm that was recently described by \cite{pannekoek:2012}. There are are several ways to define what
-``minimal'' means here, and the package works for fairly large systems of
-equations.  Thus far it has been tested on systems with on the order of
-$10^5-10^6$ variables and $10^4-10^5$ restrictions. Convergence is usually
-reached within seconds.
+algorithm that was recently described by \cite{pannekoek:2012}. There are are
+several ways to define what ``minimal'' means here, and the package works for
+fairly large systems of equations.  Thus far it has been tested on systems with
+on the order of $10^5-10^6$ variables and $10^4-10^5$ restrictions. Convergence
+is usually reached within seconds.
 \end{abstract}
 
 \tableofcontents
