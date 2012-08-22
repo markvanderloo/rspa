@@ -32,7 +32,7 @@
 
 
 \begin{document}
-
+\SweaveOpts{concordance=TRUE}
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 opts_chunk$set(
@@ -53,8 +53,8 @@ library(editrules)
 The \code{R} extension package \code{rspa} offers functionality to minimally
 adjust a vector $\bs{x}$ such that it obeys the system of (in)equations
 $\bs{Ax}\leq \bs{b}$. The package implements the successive projection
-algorithm of \cite{pannekoek:2012}.  The are are several ways to define what
-``minimal'' means here, and the package allows for fairly large systems of
+algorithm that was recently described by \cite{pannekoek:2012}. There are are several ways to define what
+``minimal'' means here, and the package works for fairly large systems of
 equations.  Thus far it has been tested on systems with on the order of
 $10^5-10^6$ variables and $10^4-10^5$ restrictions. Convergence is usually
 reached within seconds.
@@ -88,15 +88,15 @@ Here, $\bs{W}$ is a diagonal positive weight matrix.
 Note that this problem has a simple geometric interpretation. The system $\bs{Ax}\leq \bs{b}$
 describes a convex region of $\mathbb{R}^n$ (possibly of lower dimension than $n$). The problem
 is to replace the vector $\bs{x}^0$ outside this region with a record $\bs{x}$ lying in it while
-keeping the distance between $\bs{x}$ and $\bs{x}^0$ as small as possible. The distance is measured
-with $d(\bs{x},\bs{x}^0)$.
+keeping the distance $d(\bs{x},\bs{x}^0)$ as small as possible.
 
-Recently, \cite{pannekoek:2012} have published an algorithm which efficiently
-finds $\bs{x}$.  This so-called {\rm successive projection algorithm} is
-implemented in the \code{rspa} package. It minimizes $d(\bs{x},\bs{x}^0)$ as a function
-of $\bs{x}$ so that the restrictions are obeyed up to a certain {\em accuracy}.
-This accuracy is defined as the maximum absolute deviance from Eq.\ \eqref{eq:restrictions}
-and will be defined more precisely in Section \ref{sect:algorithm}.
+The algorithm implemented in the \code{rspa} package was first published by
+\cite{hildreth:1957} and was recently rediscovered by \cite{pannekoek:2012},
+who named it the {\em successive projection algorithm}. It minimizes
+$d(\bs{x},\bs{x}^0)$ as a function of $\bs{x}$ so that the restrictions are
+obeyed up to a certain {\em accuracy}.  This accuracy is defined as the maximum
+absolute deviance from Eq.\ \eqref{eq:restrictions} and will be defined more
+precisely in Section \ref{sect:algorithm}.
 
 
 The rest of this paper is structured
@@ -120,10 +120,9 @@ x_8 &=& x_6 + x_7\\
 x_4 &\geq& 0.
 \end{eqnarray*}
 %
-The first task is to define these constraints in \R. The \code{rspa}
-package offers several ways for this, but for this problem it is convenient to
-make use of the \code{editrules} package \citep{jonge:2011} to define the
-constraints.
+The first task is to define these constraints in \R{}. The \code{rspa} package
+offers several ways to do this.  One option, which we will use in this problem
+is to make use of the \code{editrules} package \citep{jonge:2011}.
 %
 <<tidy=FALSE>>=
 E <- editmatrix(expression(
@@ -147,7 +146,7 @@ x <- c(
    x8=700)
 @ 
 %
-To confirm that this vector does not meet the constraints, we call \code{violatedEdits}.
+To confirm that this vector does not meet the constraints, we call \code{violatedEdits} (also part of \code{editrules}).
 <<>>=
 violatedEdits(E,x,tol=1e-2)
 @
@@ -163,14 +162,16 @@ constraints (\code{reduce}).
 E <- reduce(substValue(E,'x5',x['x5']))
 @
 %
-Adjusting $\bs{x}$ so it meets the constraints can be done as follows.
+Adjusting $\bs{x}$ with the \code{adjust} function from \code{rspa} so 
+it meets the constraints can be done as follows.
 <<>>=
 (y <- adjust(E, x))
 @
 %
-The result is an object of class \code{adjusted}, which holds the found solution
-and some information on the algorithm. The solution can be accessed as \code{y\$x}.
-Using \code{violatedEdits} again, we see that now all restrictions are obeyed.
+The result is an object of class \code{adjusted}, which holds the found
+solution and some convergence information on the algorithm. The solution can be
+accessed as \code{y\$x}.  Using \code{violatedEdits} again, we see that now all
+restrictions are obeyed.
 <<>>=
 violatedEdits(E, y$x, tol = 1e-2)
 @
@@ -179,7 +180,7 @@ We will focus on the convergence criterion in the next section but before that,
 note the following properties of the \code{adjust} function.
 \begin{itemize}
 \item It only adjusts variables in $\bs{x}$ that occur in at least one of the restrictions.
-\item If first argument
+\item If the first argument
 of \code{adjust} is an \code{editmatrix} and the variables in $\bs{x}$ are
 named, they will automatically be matched so the order of variables is unimportant.
 \end{itemize} 
@@ -337,10 +338,10 @@ The algorithm solves the following minimization problem
 s.t. &\: &\nonumber\\
 \bs{Ax} &\leq& \bs{b},
 \end{eqnarray}
-where $\bs{W}$ is a diagonal weight matrix. By default, all weights are chosen
-equal to $1$ in the package. The weights must be larger than zero. In words,
-the algorithm finds the vector with the smallest (weighted) Euclidian distance
-from the starting vector $\bs{x}^0$ that obeys the restrictions.
+where $\bs{W}$ is a diagonal weight matrix with all weights positive. By
+default, all weights are chosen equal to $1$ in the package. In words, the
+algorithm finds the vector with the smallest (weighted) Euclidean distance from
+the starting vector $\bs{x}^0$ that obeys the restrictions.
 
 To define the convergence criterion, we separate the equality from inequality
 restrictions and write
@@ -351,7 +352,8 @@ restrictions and write
 \bs{A}_\leq\bs{x} &\leq& \bs{b}_\leq.
 \end{eqnarray}
 We now define $\varepsilon_=$ as the maximum difference between the 
-left- and right hand side of \eqref{eq:equalities} (the infinity norm):
+left- and right hand side of \eqref{eq:equalities} (the infinity norm, also
+know as $L_\infty$ or the Chebyshev distance):
 \begin{equation}
 \varepsilon_= = \left\|\bs{A}_=\bs{x} - \bs{b}_=\right\|_\infty.\\
 \end{equation}
@@ -384,24 +386,27 @@ adjusting.
 The \code{sparseConstraints} object is represented under the hood as a \code{C}
 \code{struct} that resides outside of \code{R}'s memory. It is an
 \code{R\_ExternalPtr} object, packed in an environment which is put in a
-\code{S3} class. There is therefore no point in trying to save a 
-\code{sparseConstraints} object, since the external structure will be destroyed when \code{R}
-closes.
+\code{S3} class. Since the object is not in R's memory, there is no point in
+trying to save a \code{sparseConstraints} object: only the pointer value will
+be stored while the external structure will be destroyed when \code{R} closes.
 
 
 \section{Conclusion}
 With the \code{R} extension package \code{rspa}, we have made the successive
-projection algorithm of \code{pannekoek:2012} available for \code{R} users. In
-this paper we demonstrate how (lots of) small adjustments problems can
-conveniently be solved using a \code{editmatrix} definition of rules while
-large problems can be solved using a sparse representation of the problem.
+projection algorithm available for \code{R} users. In this paper we demonstrated
+how (lots of) small adjustments problems can conveniently be solved using a
+\code{editmatrix} definition of rules while large problems can be solved using
+a sparse representation of the problem.
 
 Future work may include extending the package to allow for the weight matrix
 $\bs{W}$ to be non-diagonal and the possibility to read large problems from
 multiple formats.
 
 
-
+\section{Acknowledgements}
+I am greatly indebted by Guido van den Heuvel who critically reviewed the
+\code{C} code and pointed out many of the finer details of the \code{C89} and
+\code{C99} standards to me. Any remaining bugs are of course mine. 
 
 
 \bibliographystyle{chicago}
