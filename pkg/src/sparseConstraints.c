@@ -7,15 +7,22 @@
 SparseConstraints * sc_new( int m ){
     
    SparseConstraints *E;
-   E = (SparseConstraints *) calloc(1, sizeof(SparseConstraints));
+   E  = (SparseConstraints *) calloc(1, sizeof(SparseConstraints));
+   if ( E == NULL ){ 
+      return (SparseConstraints *)0;
+   }
    E->nconstraints = m;
-   E->A = (double **) calloc(E->nconstraints, sizeof(double *));
+   E->A     = (double **) calloc(E->nconstraints, sizeof(double *));
    E->index = (int **) calloc(E->nconstraints, sizeof(int *));
-   E->nrag = (int *) calloc(E->nconstraints, sizeof(int));
-   E->b = (double *) calloc(E->nconstraints, sizeof(double));
+   E->nrag  = (int *) calloc(E->nconstraints, sizeof(int));
+   E->b     = (double *) calloc(E->nconstraints, sizeof(double));
 
-   if ( E == 0 || E->A == 0 || E->index == 0 || E->nrag == 0 || E->b == 0 ){
-      return (SparseConstraints *) 0;
+   if ( E->A == NULL || E->index == NULL || E->nrag == NULL || E->b == NULL ){
+      free(E->A);
+      free(E->index);
+      free(E->nrag);
+      free(E->b);
+      return (SparseConstraints *)0;
    } else {
       return E;
    }
