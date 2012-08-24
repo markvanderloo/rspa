@@ -21,8 +21,8 @@ static void update_x_k_eq(double *A, double *b, double *x, int m, int n, double 
 static void update_x_k_in(double *A, double *b, double *x, int m, int n, double *w, double *wa, double *alpha, double awa, int k, double *fact){
    
    double alpha_old = alpha[k];
-
    double ax = 0;
+
    for ( int j=0; j<n; j++){
       ax += A[k + j*m] * x[j];
       wa[j] = w[j] * A[k + j*m];
@@ -30,8 +30,6 @@ static void update_x_k_in(double *A, double *b, double *x, int m, int n, double 
 
 	fact[k] = (ax - b[k])/awa;
 
-   alpha[k] = alpha[k] + fact[k];
-   alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
 
    double alphadiff = alpha_old - alpha[k];
    for ( int j=0; j<n; j++ ){
@@ -39,6 +37,31 @@ static void update_x_k_in(double *A, double *b, double *x, int m, int n, double 
    }
 }
 
+
+static void update_x_k(double *A, double *b, double *x, int neq, int m, int n, double *w, double *wa, double *alpha, double awa, int k, double *conv){
+
+   double alpha_old = alpha[k];
+   double ax = 0, fact;
+
+   for ( int j=0; j<n; j++){
+      ax += A[k + j*m] * x[j];
+      wa[j] = w[j] * A[k + j*m];
+   }
+
+	conv[k] = (ax - b[k])/awa;
+   
+   fact = conv[k];
+   if ( k >= neq ){
+      alpha[k] += conv[k];
+      if ( alpha[k] < 0 ) alpha[k] = 0;
+      fact = alpha[k] - alpha_old;
+   }
+
+   for ( int j=0; j<n; j++ ){
+      x[j] -=   wa[j]*fact;
+   }
+
+}
 
 
 // optimal adjustments with dense constraints.
@@ -74,8 +97,9 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
 
    while ( diff > *tol && niter < *maxiter ){
 
-      for (int k=0; k<neq; k++) update_x_k_eq(A, b, x, m, n, xw, wa, awa[k], k, conv);
-      for (int k=neq; k<m; k++) update_x_k_in(A, b, x, m, n, xw, wa, alpha, awa[k], k, conv);
+//      for (int k=0; k<neq; k++) update_x_k_eq(A, b, x, m, n, xw, wa, awa[k], k, conv);
+//      for (int k=neq; k<m; k++) update_x_k_in(A, b, x, m, n, xw, wa, alpha, awa[k], k, conv);
+      for (int k=0; k<m; k++) update_x_k(A, b, x, neq, m, n, xw, wa, alpha, awa[k], k, conv);
       ++niter;
 
       if ( diverged(x,n) || diverged(alpha,m) ){
