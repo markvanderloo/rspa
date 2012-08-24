@@ -5,38 +5,6 @@
 #include <float.h>
 #include "maxdist.h"
 
-static void update_x_k_eq(double *A, double *b, double *x, int m, int n, double *w, double *wa, double awa, int k, double *fact){
-
-   double ax = 0;
-
-   for ( int j=0; j<n; j++){
-      ax += A[k + j*m] * x[j];
-      wa[j] = w[j] * A[k + j*m];
-   }
-
-   fact[k] = (ax - b[k])/awa;
-   for ( int j=0; j<n; x[j++] -= wa[j]*fact[k] );
-}
-
-static void update_x_k_in(double *A, double *b, double *x, int m, int n, double *w, double *wa, double *alpha, double awa, int k, double *fact){
-   
-   double alpha_old = alpha[k];
-   double ax = 0;
-
-   for ( int j=0; j<n; j++){
-      ax += A[k + j*m] * x[j];
-      wa[j] = w[j] * A[k + j*m];
-   }
-
-	fact[k] = (ax - b[k])/awa;
-
-
-   double alphadiff = alpha_old - alpha[k];
-   for ( int j=0; j<n; j++ ){
-      x[j] +=   wa[j]*alphadiff;
-   }
-}
-
 
 static void update_x_k(double *A, double *b, double *x, int neq, int m, int n, double *w, double *wa, double *alpha, double awa, int k, double *conv){
 
