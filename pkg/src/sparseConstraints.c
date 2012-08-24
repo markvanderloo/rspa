@@ -4,7 +4,13 @@
 #include <limits.h>
 #include "sparseConstraints.h"
 
-static void set_null(void **x, int n){
+static void set_null_dbl(double **x, int n){
+   for ( int i=0; i<n; ++i ){
+      x[i] = NULL;
+   }
+}
+
+static void set_null_int(int **x, int n){
    for ( int i=0; i<n; ++i ){
       x[i] = NULL;
    }
@@ -30,8 +36,8 @@ SparseConstraints * sc_new( int m ){
       free(E->b);
       return NULL;
    } else {
-      set_null(E->A, E->nconstraints);
-      set_null(E->index, E->nconstraints);
+      set_null_dbl(E->A, E->nconstraints);
+      set_null_int(E->index, E->nconstraints);
       return E;
    }
 }
@@ -111,7 +117,7 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
 
    SparseConstraints *E = sc_new(m);
 
-   if ( E == 0 ) return E;
+   if ( E == NULL ) return NULL;
 
    
 

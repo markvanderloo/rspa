@@ -7,29 +7,28 @@
 
 SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
 
-   SparseConstraints *xp = R_ExternalPtrAddr(p);
-
+   PROTECT(p);
    PROTECT(x);
    PROTECT(w);
    PROTECT(tol);
    PROTECT(maxiter);
-
    SEXP niter, eps, status;
+   SparseConstraints *xp = R_ExternalPtrAddr(p);
     
    // make copies outside R to prevent writing in userspace.
    double xtol = REAL(tol)[0];
    int xmaxiter = INTEGER(maxiter)[0];
    int s;
-   double *xx = (double *) calloc(length(x), sizeof(double));
-   for ( int i=0; i<length(x); xx[i++] = REAL(x)[i]);
+   double *xx = REAL(x);
+   SEXP tx;
+
+   PROTECT(tx = allocVector(REALSXP, length(x)));
+   for ( int i=0; i<length(x); REAL(tx)[i++] = xx[i]);
 
    // solve
-   s = solve_sc_spa(xp, REAL(w) , &xtol, &xmaxiter, xx); 
+   s = solve_sc_spa(xp, REAL(w) , &xtol, &xmaxiter, REAL(tx)); 
 
-   // copy answers back into R
-   SEXP out = allocVector(REALSXP, length(x));
-   for (int i=0; i<length(x); REAL(out)[i++] = xx[i]); 
-
+   // return answer to R
    PROTECT(status = allocVector(INTSXP,1));
    PROTECT(niter = allocVector(INTSXP,1));
    PROTECT(eps = allocVector(REALSXP,1));
@@ -38,13 +37,12 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
    INTEGER(niter)[0] = xmaxiter;
    REAL(eps)[0] = xtol;
 
-   setAttrib(out,install("niter"), niter);
-   setAttrib(out,install("accuracy"), eps);
-   setAttrib(out,install("status"), status);
+   setAttrib(tx,install("niter"), niter);
+   setAttrib(tx,install("accuracy"), eps);
+   setAttrib(tx,install("status"), status);
 
-   free(xx);
-   UNPROTECT(7);
-   return out;
+   UNPROTECT(9);
+   return tx;
 }
 
 

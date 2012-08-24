@@ -39,7 +39,7 @@ static void update_x_k(SparseConstraints *E, double *x, double *w, double *wa, d
    
 }
 
-static set_zero(double *x, int n){
+static void set_zero(double *x, int n){
    for ( int i=0; i<n; ++i ){ 
       x[i] = 0.0;
    }
