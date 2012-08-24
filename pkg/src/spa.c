@@ -47,6 +47,8 @@ static set_zero(double *x, int n){
 
 /* Successive projection algorithm, notes.
  *
+ * Minimizes x in (x-x0)'W(x-x0) such that Ax <= b holds.
+ *
  * exit status: 
  * 0 : ok
  * 1 : not enough memory
