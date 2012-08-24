@@ -16,7 +16,7 @@ static void update_x_k(double *A, double *b, double *x, int neq, int m, int n, d
       wa[j] = w[j] * A[k + j*m];
    }
 
-	conv[k] = (ax - b[k])/awa;
+   conv[k] = (ax - b[k])/awa;
    
    fact = conv[k];
    if ( k >= neq ){
@@ -37,22 +37,28 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
    
    int niter;
 
-   double *awa = (double *) calloc(m, sizeof(double)); if (awa==0) return 1;
+   double *awa = (double *) calloc(m, sizeof(double)); 
    double *xw = (double *) calloc(n, sizeof(double));
    double *alpha = (double *) calloc(m, sizeof(double));
    double *wa = (double *) calloc(n, sizeof(double));
-	double *conv = (double *) calloc(m, sizeof(double));
+   double *conv = (double *) calloc(m, sizeof(double));
 
    // in case of emergency: wee haave too get autofhea (Schwartzenegger style)
-   if ( awa == 0 || xw == 0|| alpha == 0|| conv == 0 || wa == 0 ){ 
-      free(awa); free(xw); free(alpha); free(conv); free(wa);
+   if ( awa == NULL || xw == NULL|| alpha == NULL|| conv == NULL || wa == NULL ){ 
+      free(awa); 
+      free(xw); 
+      free(alpha); 
+      free(conv); 
+      free(wa);
       return 1;
    }
    double diff = DBL_MAX; 
    int exit_status = 0;
    
    // we only need w's inverse.
-   for ( int k=0; k < n; xw[k++] = 1/w[k] );
+   for ( int k=0; k < n; ++k ){
+      xw[k] = 1/w[k];
+   }
    
    // determine diag(A'W^(-1)A)
    for ( int k=0; k < m; k++){
@@ -65,8 +71,6 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
 
    while ( diff > *tol && niter < *maxiter ){
 
-//      for (int k=0; k<neq; k++) update_x_k_eq(A, b, x, m, n, xw, wa, awa[k], k, conv);
-//      for (int k=neq; k<m; k++) update_x_k_in(A, b, x, m, n, xw, wa, alpha, awa[k], k, conv);
       for (int k=0; k<m; k++) update_x_k(A, b, x, neq, m, n, xw, wa, alpha, awa[k], k, conv);
       ++niter;
 
@@ -74,15 +78,20 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
          exit_status = 2; 
          break;
       }
-		diff = absmax(conv, awa, neq, m);
+      diff = absmax(conv, awa, neq, m);
    }
    // number of iterations exceeded without convergence?
-   if (exit_status != 2 && niter == maxiter[0] && diff > tol[0] ) exit_status = 3;
-  
-   *tol = dc_diffmax(A, b, x, neq, m, n); // actual max abs diff.
+   if (exit_status != 2 && niter == *maxiter && diff > *tol ){ 
+      exit_status = 3;
+   }
+   *tol = dc_diffmax(A, b, x, m, n); // actual max abs diff.
    *maxiter = niter;
 
-   free(wa); free(awa); free(xw); free(alpha); free(conv);
+   free(wa); 
+   free(awa); 
+   free(xw); 
+   free(alpha); 
+   free(conv);
    return exit_status;
 }
 
