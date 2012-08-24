@@ -38,32 +38,62 @@ static void update_x_k(SparseConstraints *E, double *x, double *w, double *wa, d
    }
    
 }
-// successive projection algorithm
-int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
 
+static set_zero(double *x, int n){
+   for ( int i=0; i<n; ++i ){ 
+      x[i] = 0.0;
+   }
+}
+
+/* Successive projection algorithm, notes.
+ *
+ * exit status: 
+ * 0 : ok
+ * 1 : not enough memory
+ * 2 : divergence
+ * 3 : max iterations exceeded
+ *
+ *  NOTE: C99 std. mentions that calloc's initialization to all bits zero need
+ *  not imply a zero double representation on all platforms. We therefore
+ *  initialize all (double *)'s ourselves 
+ *  
+ *  */
+int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
+  
    int m = E->nconstraints;
    int n = E->nvar;
    int neq = E->neq;
 
    int nrag;
    int niter = 0;
-   double *awa = (double *) calloc(m, sizeof(double));
-   double *xw = (double *) calloc(n, sizeof(double));
-   double *alpha = (double *) calloc(m, sizeof(double));
-   double *conv = (double *) calloc(m, sizeof(double));
-
+   double *awa    = (double *) malloc(m * sizeof(double));
+   double *xw     = (double *) malloc(n * sizeof(double));
+   double *alpha  = (double *) malloc(m * sizeof(double));
+   double *conv   = (double *) malloc(m * sizeof(double));
    int maxrag = get_max_nrag(E);
-   double *wa = (double *) calloc(maxrag, sizeof(double));
+   double *wa     = (double *) malloc(maxrag * sizeof(double));
 
-   // cleanup in case of emergency...
-   if ( awa == 0 ||  xw == 0|| alpha == 0 || conv==0 || wa == 0 ){ 
-      free(awa); free(xw); free(alpha); free(conv); free(wa);
+   if ( awa == NULL ||  xw == NULL || alpha == NULL || conv == NULL || wa == NULL ){ 
+      // cleanup if one of the objects could nog be allocated
+      free(awa); 
+      free(xw); 
+      free(alpha); 
+      free(conv); 
+      free(wa);
       return 1;
+   } else {
+      set_zero(awa,m);
+      set_zero(xw,n);
+      set_zero(alpha,m);
+      set_zero(conv,m);
+      set_zero(wa,maxrag);
    }
 
    int exit_status = 0;
    // we only need w's inverse.
-   for ( int k=0; k < n; xw[k++] = 1.0/w[k] );
+   for ( int k=0; k < n; ++k ){ 
+      xw[k] = 1.0/w[k];
+   }
    // determine inner products A'W^(-1)A
    for ( int k=0; k < m; k++){
       awa[k] = 0;
@@ -73,10 +103,9 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
       }
    }
 
-
+   // Iterate until convergence, max iterations or divergence detection.
    double diff=DBL_MAX;
-
-   while ( diff > tol[0] && niter < maxiter[0] ){
+   while ( diff > *tol && niter < *maxiter ){
 
       for ( int k=0; k<m; k++ ) update_x_k(E, x, xw, wa, alpha, awa[k], k, conv);
       ++niter;
@@ -85,17 +114,21 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
          exit_status = 2; 
          break;
       }
-		// convergence criterion
-		diff = absmax(conv, awa, E->neq, E->nconstraints); 
+      // compute convergence criterion
+      diff = absmax(conv, awa, E->neq, E->nconstraints); 
 
    }
    // number of iterations exceeded without convergence?
-   if (exit_status != 2 && niter == maxiter[0] && diff > tol[0] ) exit_status = 3;
+   if (exit_status != 2 && niter == *maxiter && diff > *tol ) exit_status = 3;
 
    *tol = sc_diffmax(E,x); // actual difference in current vector
    *maxiter = niter;
-   free(wa); free(awa); free(xw); free(alpha); free(conv);
-    return exit_status;
+   free(wa); 
+   free(awa); 
+   free(xw); 
+   free(alpha); 
+   free(conv);
+   return exit_status;
 }
 
 

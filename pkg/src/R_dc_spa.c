@@ -10,12 +10,13 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
    PROTECT(w);
    PROTECT(neq);
    PROTECT(tol);
+   PROTECT(maxiter);
    PROTECT(x);
 
    SEXP dim;
    double *xx = REAL(x);
 
-   dim = getAttrib(A, R_DimSymbol);
+   PROTECT(dim = getAttrib(A, R_DimSymbol));
 
    int m = INTEGER(dim)[0];
    int n = INTEGER(dim)[1];
@@ -24,8 +25,10 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
    if ( m != length(b)) error("%s\n","Number of rows in constraint matrix does not mathch dimension of b.");
 
    // make copies to avoid writing in user space
-   SEXP tx = allocVector(REALSXP, n);
+   SEXP tx;
+   PROTECT(tx = allocVector(REALSXP, n));
    for ( int j=0; j<n; REAL(tx)[j++] = xx[j]);
+
    double xtol = REAL(tol)[0];
    int xmaxiter = INTEGER(maxiter)[0];
    
@@ -56,7 +59,7 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
    setAttrib(tx, install("niter"), niter);
    setAttrib(tx, install("accuracy"), eps);
 
-   UNPROTECT(9);
+   UNPROTECT(11);
    return tx;
 }
 

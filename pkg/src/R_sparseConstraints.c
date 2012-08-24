@@ -5,7 +5,6 @@
 #include <R.h>
 #include <Rdefines.h>
 
-#include "R_sparseConstraints.h"
 #include "sparseConstraints.h"
 
 void R_sc_del(SEXP p){
