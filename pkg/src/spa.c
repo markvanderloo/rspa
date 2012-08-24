@@ -7,57 +7,37 @@
 #include "sc_arith.h"
 #include "maxdist.h"
 
-// update equalities
-static void update_x_k_eq(SparseConstraints *E, double *x, double *w, double *wa, double awa, int k, double *fact){
-    
-    double *ak = E->A[k];
-    int *I = E->index[k];
-    int nrag = E->nrag[k];
-    
 
-    double ax = 0;
-    for ( int j=0; j<nrag; j++ ){
-        ax += ak[j] * x[I[j]];
-        wa[j] = w[I[j]] * ak[j];
-    }
-    
-    fact[k] = (ax - E->b[k])/awa;
 
-    for( int j=0; j < nrag; j++ ){
-        x[I[j]] = x[I[j]] - wa[j]*fact[k];
-    }
-}
-
-// update inequalities: alpha and x.
-static void update_x_k_in(SparseConstraints *E, double *x, double *w, double *wa, double *alpha, double awa, int k, double *fact){
-
+static void update_x_k(SparseConstraints *E, double *x, double *w, double *wa, double *alpha, double awa, int k, double *conv){
+   
    double *ak = E->A[k];
    int *I = E->index[k];
    int nrag = E->nrag[k];
    
-   double alpha_old = alpha[k];
-   double ax=0;
-
-   for ( int j=0; j<nrag; j++){
+   double ax = 0;
+   for ( int j=0; j<nrag; j++ ){
       ax += ak[j] * x[I[j]];
       wa[j] = w[I[j]] * ak[j];
    }
 
-   fact[k] = (ax - E->b[k])/awa;
+   conv[k] = (ax - E->b[k])/awa;
 
-   alpha[k] = alpha[k] + fact[k];
-   alpha[k] = alpha[k] > 0 ? alpha[k] : 0;
-    
-   double alphadiff = alpha_old - alpha[k];
-   for ( int j=0; j<nrag; j++ ){
-      x[I[j]] +=   wa[j]*alphadiff;
+   double fact = conv[k];
+   if ( k >= E->neq ){ // are we at an inequation?
+      double alpha_old = alpha[k];
+      alpha[k] +=  conv[k];
+      if ( alpha[k] < 0 ){
+         alpha[k] = 0;
+      }
+      fact = alpha[k] - alpha_old;
    }
-
-
+   
+   for( int j=0; j < nrag; j++ ){
+      x[I[j]] -= wa[j]*fact;
+   }
+   
 }
-
-
-
 // successive projection algorithm
 int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, double *x  ){
 
@@ -98,8 +78,7 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
 
    while ( diff > tol[0] && niter < maxiter[0] ){
 
-      for ( int k=0; k<neq; k++ ) update_x_k_eq(E, x, xw, wa, awa[k], k, conv);
-      for ( int k=neq; k<m; k++ ) update_x_k_in(E, x, xw, wa, alpha, awa[k], k, conv);
+      for ( int k=0; k<m; k++ ) update_x_k(E, x, xw, wa, alpha, awa[k], k, conv);
       ++niter;
 
       if ( diverged(x,n) || diverged(alpha,m) ){
