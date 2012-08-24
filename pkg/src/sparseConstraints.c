@@ -1,15 +1,21 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 #include "sparseConstraints.h"
 
+static void set_null(void **x, int n){
+   for ( int i=0; i<n; ++i ){
+      x[i] = NULL;
+   }
+}
 
 SparseConstraints * sc_new( int m ){
     
    SparseConstraints *E;
    E  = (SparseConstraints *) calloc(1, sizeof(SparseConstraints));
    if ( E == NULL ){ 
-      return (SparseConstraints *)0;
+      return NULL;
    }
    E->nconstraints = m;
    E->A     = (double **) calloc(E->nconstraints, sizeof(double *));
@@ -22,13 +28,17 @@ SparseConstraints * sc_new( int m ){
       free(E->index);
       free(E->nrag);
       free(E->b);
-      return (SparseConstraints *)0;
+      return NULL;
    } else {
+      set_null(E->A, E->nconstraints);
+      set_null(E->index, E->nconstraints);
       return E;
    }
 }
 
 void sc_del(SparseConstraints *E){
+
+   if ( E == NULL ) return;
    for ( int i = 0; i < E->nconstraints; i++){
       free(E->A[i]);
       free(E->index[i]);
@@ -42,9 +52,10 @@ void sc_del(SparseConstraints *E){
 
 // generate SparseConstraints object from dense matrix
 SparseConstraints * sc_from_matrix(double *A, double *b, int m, int n, int neq, double tol){
-   int nrag, jrag;
 
+   int nrag, jrag;
    SparseConstraints *E = sc_new(m);
+
    if ( E == 0 ) return E;
  
    E->neq = neq;
@@ -59,10 +70,9 @@ SparseConstraints * sc_from_matrix(double *A, double *b, int m, int n, int neq, 
       E->nrag[i] = nrag;
       E->A[i] = (double *) calloc(nrag, sizeof(double));
       E->index[i] = (int *) calloc(nrag, sizeof(int));
-      if ( E->A[i] == 0 || E->index[i] == 0 ){ // no joy
-         E->nconstraints = i-1; 
+      if ( E->A[i] == NULL || E->index[i] == NULL ){ // no joy
          sc_del(E);
-         return (SparseConstraints *)0;
+         return NULL;
       }
       for ( int j=0; j<n; j++ ){
          if ( fabs(A[i+m*j]) > tol ){
@@ -80,45 +90,52 @@ SparseConstraints * sc_from_matrix(double *A, double *b, int m, int n, int neq, 
 
 static int get_row_end(int *rows, int nrows, int row_start){
     int row_nr = rows[row_start];
-    int row_end = row_start-1;
-    while (row_end < (nrows-1) && rows[row_end+1] == row_nr) row_end++;
+    int row_end = row_start + 1;
+    while (row_end < (nrows) && rows[row_end] == row_nr) row_end++;
     return row_end;
 }
 
 
 
-// generate SparseConstraints from row-column-coefficient specifications
-// It is assumed that  int *rows is sorted in increasing order!
+/* Generates a sparse representation of Ax <op> b, where the first neq <op> are
+ * '=' and the rest are interpreted as '<='. 
+ *
+ * - A is specified in row, column, coefficient triples.
+ * - no dimension checking on A or b is performed.
+ * - It is assumed that  int *rows is sorted in increasing order!
+ */
 SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, int ncoef, double *b, int m, int neq ){
 
+   int maxcol=0, k;
+   int row_start = 0, row_nr, row_end; 
+
    SparseConstraints *E = sc_new(m);
+
    if ( E == 0 ) return E;
 
-   int maxcol=0, k;
-   int row_start = 0, row_nr; 
-   int row_end = get_row_end(rows, ncoef, row_start);
+   
+
    for ( int irow=0; irow < m; irow++){
       E->b[irow] = b[irow];
       row_nr = rows[row_start];
       row_end = get_row_end(rows, ncoef, row_start);
      
-      E->nrag[irow]    = 1 + row_end - row_start;
+      E->nrag[irow]    = row_end - row_start;
       E->index[irow]   = (int *) calloc( E->nrag[irow], sizeof(int));
       E->A[irow]       = (double *) calloc( E->nrag[irow], sizeof(double));
-      if ( E->A[irow] == 0 || E->index[irow] == 0 ){ // no memory = no joy 
-         E->nconstraints = irow-1;
+      if ( E->A[irow] == NULL || E->index[irow] == NULL ){ // no memory = no joy 
          sc_del(E);
-         return (SparseConstraints *)0;
+         return NULL;
       }            
 
       k = 0;
-      for ( int j=row_start; j <= row_end; j++){
+      for ( int j=row_start; j < row_end; j++){
          E->A[irow][k] = coef[j];
          E->index[irow][k] = cols[j];
          ++k;
-         maxcol = cols[j] > maxcol ? cols[j] : maxcol;
+         if (cols[j] > maxcol) maxcol = cols[j];
       }
-      row_start = row_end+1;
+      row_start = row_end;
    } 
    
    E->neq = neq;
@@ -129,9 +146,9 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
 }
 
 int get_max_nrag(SparseConstraints *E){
-   int nmax = 0;
+   int nmax = INT_MIN;
    for ( int i=0; i < E->nconstraints; ++i ){
-      nmax = nmax < E->nrag[i] ? E->nrag[i] : nmax;
+      if ( nmax < E->nrag[i] ) nmax = E->nrag[i];
    }
 }
 
