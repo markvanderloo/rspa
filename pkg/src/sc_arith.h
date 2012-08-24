@@ -17,7 +17,7 @@ void sc_diffvec(SparseConstraints *E, double *x, double *diff);
 /* Compute sum  sum(|Ax-b|) for equations.
  * For inequations, if diff_i = a_i.x - b < 0 then diff_i = 0
  *  
- *  diff is room to compute difference vector
+ * difference vector is returned in 2nd argument
  * 
  */
 double sc_diffsum(SparseConstraints *, double *);
