@@ -200,18 +200,21 @@ the same set of rules. The output contains the adjusted records as well
 as logging information.
 
 As an example, we create a new set of rules and generate some random data.
-<<>>=
+<<echo=FALSE>>=
+set.seed(1976)
+@
+<<tidy=FALSE>>=
 F <- editmatrix(expression(
-	x + y == z,
+   x + y == z,
    x >= 0,
-	y >= 0,
-	z >=0
+   y >= 0,
+   z >=0
 ))
 N <- 100
 dat <- data.frame(
-	x = runif(100),
-	y = rnorm(100),
-	z = rlnorm(100)
+   x = runif(100),
+   y = rnorm(100),
+   z = rlnorm(100)
 )
 @
 By construction, it is very unlikely that all generated data obey the rules in
@@ -375,28 +378,30 @@ In other words: the algorithm terminates when the largest deviation from any of 
 
 \section{Some notes on implementation}
 \label{sect:implementation}
-The algorithm of \cite{pannekoek:2012} has been implemented twice in this package.
-Both implementations run as compiled \code{C} code which is linked to \code{R}.
-The first implementation uses a dense matrix representation, and is called by
-\code{adjust.matrix}. It is also the default method that is called by \code{adjust.editmatrix}.
-However, if the optional argument \code{method='sparse'} is passed to \code{adjust.editmatrix},
-the \code{editmatrix} object will be coerced to a \code{sparseConstraints} object prior to
-adjusting.
+The core routines are implemented as \code{C} routines (following the
+\code{C99} standard) that can be called from the \code{R} environment.  The
+successive projection algorithm is implemented in a dense and a sparse version.
+The dense version is called by \code{adjust.matrix} and is also the default
+method that is called by \code{adjust.editmatrix}.  If the optional argument
+\code{method='sparse'} is passed to \code{adjust.editmatrix}, the
+\code{editmatrix} object will be coerced to a \code{sparseConstraints} object
+prior to adjusting.
 
 The \code{sparseConstraints} object is represented under the hood as a \code{C}
 \code{struct} that resides outside of \code{R}'s memory. It is an
-\code{R\_ExternalPtr} object, packed in an environment which is put in a
-\code{S3} class. Since the object is not in R's memory, there is no point in
-trying to save a \code{sparseConstraints} object: only the pointer value will
-be stored while the external structure will be destroyed when \code{R} closes.
+\code{R\_ExternalPtr} object, packed in an \R{} \code{environment} which is put
+in a \code{S3} class. Since the object is not in \R{}'s memory, there is no point
+in trying to save a \code{sparseConstraints} object: only the pointer value
+will be stored while the external structure will be destroyed when \code{R}
+closes.
 
 
 \section{Conclusion}
 With the \code{R} extension package \code{rspa}, we have made the successive
-projection algorithm available for \code{R} users. In this paper we demonstrated
-how (lots of) small adjustments problems can conveniently be solved using a
-\code{editmatrix} definition of rules while large problems can be solved using
-a sparse representation of the problem.
+projection algorithm available for \code{R} users. In this paper we
+demonstrated how (lots of) small adjustments problems can conveniently be
+solved using a \code{editmatrix} definition of rules while large problems can
+be solved using a sparse representation of the problem.
 
 Future work may include extending the package to allow for the weight matrix
 $\bs{W}$ to be non-diagonal and the possibility to read large problems from
@@ -405,8 +410,8 @@ multiple formats.
 
 \section{Acknowledgements}
 I am greatly indebted by Guido van den Heuvel who critically reviewed the
-\code{C} code and pointed out many of the finer details of the \code{C89} and
-\code{C99} standards to me. Any remaining bugs are of course mine. 
+\code{C} code and pointed out many of the finer details of the \code{C99}
+standards to me. Any remaining bugs are of course of my doing. 
 
 
 \bibliographystyle{chicago}

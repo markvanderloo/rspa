@@ -84,7 +84,7 @@ int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol
    if (exit_status != 2 && niter == *maxiter && diff > *tol ){ 
       exit_status = 3;
    }
-   *tol = dc_diffmax(A, b, x, m, n); // actual max abs diff.
+   *tol = dc_diffmax(A, b, x, neq, m, n); // actual max abs diff.
    *maxiter = niter;
 
    free(wa); 

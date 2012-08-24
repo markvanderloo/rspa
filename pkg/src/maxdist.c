@@ -28,14 +28,15 @@ double absmax(double *conv, double *awa, int neq, int nconstraints){
 }
 
 // d = ||Ax-b||_Inf 
-double dc_diffmax(double *A, double *b, double *x, int m, int n){
+double dc_diffmax(double *A, double *b, double *x, int neq, int m, int n){
    double ax, d, dmax=0;
    for ( int i=0; i < m; ++i ){
       ax = 0;
       for ( int j=0; j < n; ++j ){
          ax += A[i + m*j]*x[j];
       }
-      d = fabs(ax - b[i]);
+      d = ax - b[i];
+      if ( i < neq ) d = fabs(d);
       if ( d > dmax ) dmax = d;
    }
    // if all equalities and inequalities are fulfilled
