@@ -69,9 +69,9 @@ In statistics one is often confronted with records or sets of estimated values
 that have to obey a set of linear equations and/or inequations. Examples
 include records from business surveys that have to obey accountancy rules or
 production-consumption balances for national account systems.  In practice,
-such data seldom obeys all restrictions leading to further inconsistencies
-when the data is used as input for further analyses. One solution is to
-minimally adjust the data so that all restrictions are obeyed. 
+such data seldom obeys all restrictions leading to further inconsistencies when
+the data is used as input for further analyses. One solution is to minimally
+adjust the data so that all restrictions are obeyed. 
 
 Here, with minimal adjustment we mean that a record $\bs{x}^0\in\mathbb{R}^n$ is replaced
 with a value $\bs{x}$ such that the objective function
@@ -85,10 +85,11 @@ is minimized as a function of $\bs{x}$, subject to
 \end{equation}
 Here, $\bs{W}$ is a diagonal positive weight matrix. 
 
-Note that this problem has a simple geometric interpretation. The system $\bs{Ax}\leq \bs{b}$
-describes a convex region of $\mathbb{R}^n$ (possibly of lower dimension than $n$). The problem
-is to replace the vector $\bs{x}^0$ outside this region with a record $\bs{x}$ lying in it while
-keeping the distance $d(\bs{x},\bs{x}^0)$ as small as possible.
+Note that this problem has a simple geometric interpretation. The system
+$\bs{Ax}\leq \bs{b}$ describes a convex region of $\mathbb{R}^n$ (possibly of
+lower dimension than $n$). The problem is to replace the vector $\bs{x}^0$
+outside this region with a record $\bs{x}$ lying in it while keeping the
+distance $d(\bs{x},\bs{x}^0)$ as small as possible.
 
 The algorithm implemented in the \code{rspa} package was first published by
 \cite{hildreth:1957} and was recently rediscovered by \cite{pannekoek:2012},
@@ -327,7 +328,68 @@ Next, we define a new vector that matches these constraints and adjust it.
 x_sparse <- c(330, 700, 1000, 30, 500, 200) 
 (adjust(e, x_sparse))
 @
-Which gives the results as expected.
+Which gives the expected results.
+
+Finally, we show in Figure \ref{fig:transcript} a transcript of a case where we
+treated an adjustment problem of $474\,948$ variables under $60\,675$
+constraints. We use the \code{LaF} package of \cite{laan:2012} to read the
+matrix $\bs{A}$ in row-column-coefficient format from a fixed-width file. Next,
+the constant vector \code{b} and \code{x} are read using \R{}'s default
+\code{I/O} funcitons. The \code{sparseConstraints} object is generated and
+stored in \code{e}. A printout shows the number of variables and constraints.
+Because of the large number of variables no rules are printed explicitly.  A
+call to \code{adjust} adjusts the vector minimally and returns an
+\code{adjusted} object. The solution was found in 5.66 seconds on an
+\code{Intel}$^\textrm{\textregistered}$ \code{Core}\texttrademark{}
+\code{i7-2677M} CPU running at 1.80GHz.
+
+
+\begin{figure}
+<<tidy=FALSE,eval=FALSE>>=
+> library(LaF)
+Loading required package: Rcpp
+> library(rspa)
+Loading required package: editrules
+> 
+> # read A-matrix
+> laf <- laf <- open <- fwf(
++    file = "prob2A.txt",
++    column <- types = c("integer","integer","double"),
++    column <- widths = c(10,10,4)
++    )
+>    rowcol <- laf[]
+> laf <- close(laf)
+> 
+> # read b-vector
+> b <- read.csv("prob2b.txt",header=FALSE)[,1]
+> 
+> # read x-vector
+> x <- read.csv("prob2x.txt",header=FALSE)[,1]
+> 
+> e <- sparseConstraints(rowcol,b,neq=length(b))
+> e
+Sparse numerical constraints.
+  Variables   : 474948
+  Restrictions: 60675 (printing 0)
+> 
+> y <- adjust(e, x)
+> y
+Object of class 'adjusted'
+  Status    : success (using 'sparse' method)
+  Accuracy  : 0.00770226
+  Objective : 47430.5
+  Iterations: 552
+  Timing (s): 5.661
+Solution (truncated at 10):
+ [1]  5.4028322  3.5246546  3.7979088  1.1202164  2.5304367  0.2037056
+ [7] 97.9161357  1.5714899  4.5743395 -1.1756605
+@
+\caption{Transcript of treating an adjustment problem with $474\,948$ variables
+under $60\,675$ equality restrictions.}
+\label{fig:transcript}
+\end{figure}
+
+\clearpage
 
 
 \section{About the adjustment algorithm and convergence}
@@ -378,7 +440,7 @@ In other words: the algorithm terminates when the largest deviation from any of 
 
 \section{Some notes on implementation}
 \label{sect:implementation}
-The core routines are implemented as \code{C} routines (following the
+The core algorithms are implemented as \code{C} routines (following the
 \code{C99} standard) that can be called from the \code{R} environment.  The
 successive projection algorithm is implemented in a dense and a sparse version.
 The dense version is called by \code{adjust.matrix} and is also the default
@@ -411,7 +473,7 @@ multiple formats.
 \section{Acknowledgements}
 I am greatly indebted by Guido van den Heuvel who critically reviewed the
 \code{C} code and pointed out many of the finer details of the \code{C99}
-standards to me. Any remaining bugs are of course of my doing. 
+standard to me. Any remaining bugs are of course of my doing. 
 
 
 \bibliographystyle{chicago}
