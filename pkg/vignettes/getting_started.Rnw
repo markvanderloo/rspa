@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{getting-started}
+%%\VignetteIndexEntry{The rspa package}
 \documentclass[a4paper, 11pt, fleqn]{article}
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb}
@@ -35,11 +35,7 @@
 \SweaveOpts{concordance=TRUE}
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
-opts_chunk$set(
-    size='small'
-#    prompt=TRUE,
-#    comment=''
-)
+opts_chunk$set(size='small')
 @
 
 
@@ -345,44 +341,44 @@ call to \code{adjust} adjusts the vector minimally and returns an
 
 
 \begin{figure}
-<<tidy=FALSE,eval=FALSE>>=
-> library(LaF)
-Loading required package: Rcpp
-> library(rspa)
-Loading required package: editrules
-> 
-> # read A-matrix
-> laf <- laf <- open <- fwf(
-+    file = "prob2A.txt",
-+    column <- types = c("integer","integer","double"),
-+    column <- widths = c(10,10,4)
-+    )
->    rowcol <- laf[]
-> laf <- close(laf)
-> 
-> # read b-vector
-> b <- read.csv("prob2b.txt",header=FALSE)[,1]
-> 
-> # read x-vector
-> x <- read.csv("prob2x.txt",header=FALSE)[,1]
-> 
-> e <- sparseConstraints(rowcol,b,neq=length(b))
-> e
-Sparse numerical constraints.
-  Variables   : 474948
-  Restrictions: 60675 (printing 0)
-> 
-> y <- adjust(e, x)
-> y
-Object of class 'adjusted'
-  Status    : success (using 'sparse' method)
-  Accuracy  : 0.00770226
-  Objective : 47430.5
-  Iterations: 552
-  Timing (s): 5.661
-Solution (truncated at 10):
- [1]  5.4028322  3.5246546  3.7979088  1.1202164  2.5304367  0.2037056
- [7] 97.9161357  1.5714899  4.5743395 -1.1756605
+<<eval=FALSE,tidy=FALSE,highlight=FALSE>>=
+library(LaF)
+## Loading required package: Rcpp
+library(rspa)
+## Loading required package: editrules
+ 
+# read A-matrix
+laf <- laf_open_fwf(
+    file = "prob2A.txt",
+    column_types = c("integer","integer","double"),
+    column_widths = c(10,10,4)
+    )
+rowcol <- laf[]
+laf <- close(laf)
+ 
+# read b-vector
+b <- read.csv("prob2b.txt",header=FALSE)[,1]
+ 
+# read x-vector
+x <- read.csv("prob2x.txt",header=FALSE)[,1]
+ 
+e <- sparseConstraints(rowcol,b,neq=length(b))
+e
+## Sparse numerical constraints.
+##  Variables   : 474948
+##  Restrictions: 60675 (printing 0)
+ 
+y <- adjust(e, x)
+y
+## Object of class 'adjusted'
+##  Status    : success (using 'sparse' method)
+##  Accuracy  : 0.00770226
+##  Objective : 47430.5
+##  Iterations: 552
+##  Timing (s): 5.661
+## Solution (truncated at 10):
+## [1]  5.4028322  3.5246546  3.7979088  1.1202164  2.5304367  0.2037056
+## [7] 97.9161357  1.5714899  4.5743395 -1.1756605
 @
 \caption{Transcript of treating an adjustment problem with $474\,948$ variables
 under $60\,675$ equality restrictions.}
