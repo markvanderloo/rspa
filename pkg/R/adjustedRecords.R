@@ -72,12 +72,12 @@ plot.adjustedRecords <- function(x,...){
 
 
    
-	a <- x$status$accuracy[x$status$accuracy > 0]
-  
+   ia <- !is.na(x$status$status) & x$status$accuracy > 0
+	a <- x$status$accuracy[ia]
 	if ( length(a) >=2 ){
 		d <- density(sqrt(a))
-		plot(d$x*d$x,d$y+.Machine$double.eps,
-			main= sprintf("Accuracy (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+		plot(d$x*d$x, d$y + .Machine$double.eps,
+			main= sprintf("Accuracy (%d of %d adjusted records positive)",length(a),sum(!is.na(x$status$status))),
 			ylab='density',
 			xlab='',
 			type='l',
@@ -92,8 +92,8 @@ plot.adjustedRecords <- function(x,...){
 	a <- x$status$objective[x$status$objective > 0]
 	if ( length(a) >= 2 ){
 		d <- density(log(a))	
-		plot(exp(d$x),d$y+.Machine$double.eps,
-			main= sprintf("Objective function (%d of %d positive)",length(a),sum(!is.na(x$status$status))),
+		plot(exp(d$x), d$y + .Machine$double.eps,
+			main= sprintf("Objective function (%d of %d records adjusted)",length(a),sum(!is.na(x$status$status))),
 			ylab='density',
 			xlab='',
 			type='l',

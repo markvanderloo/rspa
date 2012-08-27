@@ -22,7 +22,7 @@
 \DeclareRobustCommand{\VAN}[3]{#2}
 
 
-\title{The \code{rspa} package\\
+\title{The \code{rspa} package for minimal record adjustment\\
   {\small Package version \Sexpr{packageVersion("rspa")}}
 }
 \author{Mark van der Loo}
@@ -52,8 +52,8 @@ $\bs{Ax}\leq \bs{b}$. The package implements the successive projection
 algorithm that was recently described by \cite{pannekoek:2012}. There are are
 several ways to define what ``minimal'' means here, and the package works for
 fairly large systems of equations.  Thus far it has been tested on systems with
-on the order of $10^5-10^6$ variables and $10^4-10^5$ restrictions. Convergence
-is usually reached within seconds.
+on the order of $10^5-10^6$ variables and $10^4-10^5$ restrictions where
+convergence is reached in seconds.
 \end{abstract}
 
 \tableofcontents
@@ -238,13 +238,16 @@ accuracy (deviance from constraints) and objective function value per record.}
 \end{figure}
 
 
-The \code{R} generic \code{summary} and \code{plot} functions have been overloaded
-to get a quick glance of result quality and amount of change from the original data.
-Figure \ref{fig:adjustedRecords} shows the result of plotting \code{A} of the
-above example. Two plots are created. The top panel shows a kernel density estimate of 
-the accuracy values for each record. The lower panel shows a kernel density estimate
-of the objective function value. The actual values are shown as a ``rug plot'' under
-the density plots. 
+The \code{R} generic \code{summary} and \code{plot} functions have been
+overloaded to get a quick glance of result quality and amount of change from
+the original data.  Figure \ref{fig:adjustedRecords} shows the result of
+plotting \code{A} of the above example. Two plots are created. The top panel
+shows a kernel density estimate of the accuracy values for each record. The
+lower panel shows a kernel density estimate of the objective function value.
+The actual values are shown as a ``rug plot'' under the density plots. In this
+very simple example, the accuracy is exactly zero for half of the treated
+records, indicating that the constraints are met exactly after adjusing.
+
 
 It is well-known that kernel density estimates can extrapolate into regions
 where the actual probability density equals zero. Here, we need to make sure
@@ -277,7 +280,9 @@ its three columns, the vector $\bs{b}$ and $n_=$.
 For large problems, the \code{data.frame} method is probably the most convenient so this will
 be demonstrated below.
 
-Consider again the constraints in \code{E} of page \pageref{code:substvalue}. After substituting
+\newpage
+Consider again the constraints in \code{E} of page \pageref{code:substvalue}.
+After substituting
 $x_5=950$, it reads:
 <<>>=
 E
