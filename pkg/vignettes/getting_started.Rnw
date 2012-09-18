@@ -49,7 +49,7 @@ library(editrules)
 The \code{R} extension package \code{rspa} offers functionality to minimally
 adjust a vector $\bs{x}$ such that it obeys the system of (in)equations
 $\bs{Ax}\leq \bs{b}$. The package implements the successive projection
-algorithm that was recently described by \cite{pannekoek:2012}. There are are
+algorithm that was recently described by \cite{pannekoek:2012}. There are
 several ways to define what ``minimal'' means here, and the package works for
 fairly large systems of equations.  Thus far it has been tested on systems with
 on the order of $10^5-10^6$ variables and $10^4-10^5$ restrictions where
@@ -69,8 +69,8 @@ such data seldom obeys all restrictions leading to further inconsistencies when
 the data is used as input for further analyses. One solution is to minimally
 adjust the data so that all restrictions are obeyed. 
 
-Here, with minimal adjustment we mean that a record $\bs{x}^0\in\mathbb{R}^n$ is replaced
-with a value $\bs{x}$ such that the objective function
+Here, with minimal adjustment we mean that a record $\bs{x}^0\in\mathbb{R}^n$
+is replaced with a value $\bs{x}$ such that the objective function
 \begin{equation}
 d(\bs{x},\bs{x}^0) = \left[(\bs{x} - \bs{x}^0)'\bs{W}(\bs{x}-\bs{x}^0)\right]^{1/2},
 \end{equation}
@@ -87,20 +87,28 @@ lower dimension than $n$). The problem is to replace the vector $\bs{x}^0$
 outside this region with a record $\bs{x}$ lying in it while keeping the
 distance $d(\bs{x},\bs{x}^0)$ as small as possible.
 
-The algorithm implemented in the \code{rspa} package was first published by
-\cite{hildreth:1957} and was recently rediscovered by \cite{pannekoek:2012},
-who named it the {\em successive projection algorithm}. It minimizes
-$d(\bs{x},\bs{x}^0)$ as a function of $\bs{x}$ so that the restrictions are
-obeyed up to a certain {\em accuracy}.  This accuracy is defined as the maximum
-absolute deviance from Eq.\ \eqref{eq:restrictions} and will be defined more
-precisely in Section \ref{sect:algorithm}.
+The algorithm implemented in the \code{rspa} package is a special case of
+the \code{successive projection algorithm} for more general convex optimization
+problems. The successive projection algorithm and the spacial case considered
+here was recently applied by \cite{pannekoek:2012} to adjustment problems
+related to survey data. Their paper also contains a detailed discussion
+of the algorithm.
 
 
-The rest of this paper is structured
-as follows. In Sections \ref{sect:simpleexample} to \ref{sect:largeproblems} we
-demonstrate some of the package's core functionality. Sections \ref{sect:algorithm}
-and \ref{sect:implementation} provide some details on the inner workings of the
-package which may help users to interpret the results. 
+The algorithm minimizes $d(\bs{x},\bs{x}^0)$ as a function of $\bs{x}$ so that
+the restrictions are obeyed up to a certain {\em accuracy}.  This accuracy is
+defined as the maximum absolute deviance from Eq.\ \eqref{eq:restrictions} and
+will be defined more precisely in Section \ref{sect:algorithm}.
+
+
+This paper is intended as an overview of the package. For a detailed
+description of functions and their parameters, refer to the manual (help pages)
+that included with the package.  The rest of this paper is structured as
+follows. In Sections \ref{sect:simpleexample} to \ref{sect:largeproblems} we
+demonstrate some of the package's core functionality. Sections
+\ref{sect:algorithm} and \ref{sect:implementation} provide some details on the
+inner workings of the package which may help users to interpret the results. 
+
 
 
 \section{A simple example}
@@ -185,8 +193,9 @@ The \code{adjust} function is a generic function and it accepts constraints in
 \code{matrix}, \code{sparseConstraints} or \code{editmatrix} format. For small
 adjustment problems, up to say a few hundred variables and constraints, the
 \code{matrix} or \code{editmatrix} format will be fine. Large problems, with
-thousands of variables and restrictions can be defined in sparse format and
-the adjustment problem is solved with a routine for sparse adjustment.
+thousands (or millions) of variables and restrictions can be defined in sparse
+format and in that case the adjustment problem is solved with a routine for sparse
+adjustment. This is explained further in section \ref{sect:largeproblems}.
 
 
 \section{Treating many records}
@@ -223,7 +232,7 @@ summary(A)
 @
 By default, all variables in \code{dat} are adjusted to meet the rules in
 \code{F}.  However, one can optionally pass an array indicating which variables
-to adjust.  It is also possible to pass (an \code{array} or \code{vector} of)
+to adjust. It is also possible to pass (an \code{array} or \code{vector} of)
 weights to control the relative amount of change per variable. The return value
 of \code{adjustRecords} is an object of class \code{adjustedValues}. It
 contains the adjusted records in \code{A\$adjusted} and a \code{data.frame}
@@ -232,8 +241,9 @@ collecting status information in \code{A\$status}.
 <<>>=
 plot(A)
 @
-\caption{Plotting an object of class \code{adjustedRecords} yields a density plot of the
-accuracy (deviance from constraints) and objective function value per record.}
+\caption{Plotting an object of class \code{adjustedRecords} yields a density
+plot of the accuracy (maximum absolute deviance from constraints) and objective
+function value per record.}
 \label{fig:adjustedRecords}
 \end{figure}
 
@@ -246,7 +256,7 @@ shows a kernel density estimate of the accuracy values for each record. The
 lower panel shows a kernel density estimate of the objective function value.
 The actual values are shown as a ``rug plot'' under the density plots. In this
 very simple example, the accuracy is exactly zero for half of the treated
-records, indicating that the constraints are met exactly after adjusing.
+records, indicating that the constraints are met exactly after adjusting.
 
 
 It is well-known that kernel density estimates can extrapolate into regions
@@ -271,10 +281,10 @@ The function \code{sparseConstraints} constructs such objects and accepts argume
 form of either
 \begin{itemize}
 \item An \code{editmatrix}
-\item A \code{matrix} $\bs{A}$, a constant vector $\bs{b}$ and an integer $n_=$ indicating which
-rows of $\bs{A}$ represent equalities.
-\item A \code{data.frame} holding row indices, column indices and coefficients of $\bs{A}$ in 
-its three columns, the vector $\bs{b}$ and $n_=$.
+\item A \code{matrix} $\bs{A}$, a constant vector $\bs{b}$ and an integer $n_=$ to indicate
+that the first $n_=$ rows of $\bs{A}$ and $\bs{b}$ represent equalities.
+\item A \code{data.frame} holding row indices, column indices and non-zero
+coefficients of $\bs{A}$ in its three columns, the vector $\bs{b}$ and $n_=$.
 \end{itemize}
 %
 For large problems, the \code{data.frame} method is probably the most convenient so this will
@@ -395,9 +405,10 @@ under $60\,675$ equality restrictions.}
 
 \section{About the adjustment algorithm and convergence}
 \label{sect:algorithm}
-The \code{rspa} package implements the {\em successive projection algorithm} of
-\cite{pannekoek:2012}. Given a vector $\bs{x}^0$ for which $\bs{Ax}^0\not\leq \bs{b}$.
-The algorithm solves the following minimization problem
+The \code{rspa} package implements the {\em successive projection algorithm} as
+described by \cite{pannekoek:2012}. Given a vector $\bs{x}^0$ for which
+$\bs{Ax}^0\not\leq \bs{b}$.  The algorithm solves the following minimization
+problem
 \begin{eqnarray}
 \lefteqn{
 \argmin_{\bs{x}} (\bs{x}-\bs{x}^0)'\bs{W}(\bs{x} - \bs{x}^0)}\nonumber\\
@@ -437,7 +448,22 @@ until the convergence parameter $\max(\varepsilon_=,\varepsilon_\leq)<\varepsilo
 In other words: the algorithm terminates when the largest deviation from any of the 
 (in)equality restrictions is met within a small parameter $\varepsilon$.
 
+In the case that the set of user-defined constraints are infeasible
+(contradictory), the algorithm either diverges, resulting in
+\code{NaN}-coefficients, or the algorithm oscillates without convergence until
+the maximum number of iterations have been performed. Both cases are detected
+and reported. For sets of constraints that are stored as an \code{editmatrix}
+object, the function \code{isFeasible} of the \code{editrules} packages is able
+to check whether the set of constraints are contradictory.
 
+Below is an example where the algorithm starts oscillating. It adjusts \code{x}
+for the first constraint, violating the second, adjusts it for the second constraint,
+violating the first, and so on.
+<<>>=
+e <- editmatrix(expression( x < 0, x > 1))
+isFeasible(e)
+adjust(e,c(x=0.5))
+@
 
 \section{Some notes on implementation}
 \label{sect:implementation}
