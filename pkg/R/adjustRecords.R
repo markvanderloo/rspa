@@ -50,7 +50,7 @@ adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(
       e <- B[[i]]
 		
       vars <- nm[nm %in% getVars(e)]
-      adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE], verbose=verbose) 
+      adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE], verbose=verbose, ...) 
       dat[vars] <- adj$adjusted
       status <- status %++% adj$status 
    }
