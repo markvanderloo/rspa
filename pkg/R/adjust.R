@@ -58,7 +58,7 @@ adjust <- function(object, ...){
 #' @param method use dense or sparse matrix method.
 #' @export
 #' @rdname adjust
-adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), maxiter=1000L, method=c('dense','sparse'), ...){
+adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','sparse'), ...){
   method <- match.arg(method)
    if (!isNormalized(object)) object <- normalize(object)
 	object <- reduce(object)
@@ -77,14 +77,19 @@ adjust.editmatrix <- function(object, x, w=rep(1.0,length(x)), maxiter=1000L, me
 
 
 	if ( method == 'sparse' ){
-		y <- adjust.sparseConstraints(sparseConstraints(object),u,...)
+		y <- adjust.sparseConstraints(
+         sparseConstraints(object), 
+         x = u, 
+         w = w, 
+         ...
+      )
 	} else {
 		y <- adjust.matrix(
 			object = getA(object)[I,,drop=FALSE], 
 			b      = getb(object)[I], 
 			x      = u,
 			neq    = neq,
-			w      = w,
+         w      = w,
 			... 
 		)
 	} 
