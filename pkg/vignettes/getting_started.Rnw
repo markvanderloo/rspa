@@ -32,7 +32,6 @@
 
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 opts_chunk$set(size='small')
