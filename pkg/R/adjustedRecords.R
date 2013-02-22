@@ -26,7 +26,7 @@
 #' @rdname adjustedRecords
 #' @export
 print.adjustedRecords <- function(x,...){
-   I <- 1:min(10,nrow(x))
+   I <- 1:min(10,nrow(x$adjusted))
    cat("Object of class 'adjustedRecords'\n")
    print(
       cbind(x$adjusted[I,],x$status[I,])
