@@ -35,7 +35,7 @@ static void update_x_k(double *A, double *b, double *x, int neq, int m, int n, d
 // optimal adjustments with dense constraints.
 int dc_solve(double *A, double *b, double *w, int m, int n, int neq, double *tol, int *maxiter, double *x){
    
-   int niter;
+   int niter = 0;
 
    double *awa = (double *) calloc(m, sizeof(double)); 
    double *xw = (double *) calloc(n, sizeof(double));

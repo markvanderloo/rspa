@@ -1,4 +1,5 @@
 version 0.1-2
+- Cleaned code after compilation warnings in candidate compiler for OSX (Thanks to Prof. Brian Ripley)
 - bugfix in print method for object of class 'adjustedRecords'
 
 version 0.1-1
@@ -7,3 +8,4 @@ version 0.1-1
 
 version 0.1-0
 - First stable release
+

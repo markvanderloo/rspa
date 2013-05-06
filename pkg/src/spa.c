@@ -64,7 +64,6 @@ int solve_sc_spa(SparseConstraints *E, double *w, double *tol, int *maxiter, dou
   
    int m = E->nconstraints;
    int n = E->nvar;
-   int neq = E->neq;
 
    int nrag;
    int niter = 0;

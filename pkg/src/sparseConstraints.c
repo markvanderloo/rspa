@@ -156,6 +156,7 @@ int get_max_nrag(SparseConstraints *E){
    for ( int i=0; i < E->nconstraints; ++i ){
       if ( nmax < E->nrag[i] ) nmax = E->nrag[i];
    }
+  return nmax;
 }
 
 
