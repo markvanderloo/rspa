@@ -7,7 +7,7 @@ PDFS= getting_started.pdf
 all: $(PDFS) 
 
 clean:
-	rm -f *.tex *.bbl *.blg *.aux *.out *.log *.spl 
+	rm -f *.tex *.bbl *.blg *.aux *.out *.log *.spl *.toc *.pdf
 
 %.pdf: %.Rnw
 	R -e "library(knitr); knit2pdf('$*.Rnw')"
