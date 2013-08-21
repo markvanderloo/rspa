@@ -1,3 +1,4 @@
+%\VignetteEngine{knitr::knitr}
 %%\VignetteIndexEntry{The rspa package}
 \documentclass[a4paper, 11pt, fleqn]{article}
 \usepackage[english]{babel}

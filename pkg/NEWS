@@ -1,14 +1,17 @@
-version 0.1-2
+version-0.1.4
+- Vignette now built using weave engine specification (allowed since R3.0).
+
+version 0.1.3
 - Removed vignette dependence on inconsolata.sty which is now unavailable from CTAN (Thanks to Brian Ripley)
 
-version 0.1-2
+version 0.1.2
 - Cleaned code after compilation warnings in candidate compiler for OSX (Thanks to Brian Ripley)
 - bugfix in print method for object of class 'adjustedRecords'
 
-version 0.1-1
+version 0.1.1
 - Update in vignette due to knitr upgrade (thanks to Yihui Xi).
 - Bugfix in adjustRecords: optional parameters were not passed to "adjust" (thanks to Sander Scholtus)
 
-version 0.1-0
+version 0.1.0
 - First stable release
 
