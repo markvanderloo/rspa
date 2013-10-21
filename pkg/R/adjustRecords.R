@@ -67,7 +67,7 @@ adjustBlock <- function(E, dat, adjust, w, verbose, ...){
 	n <- nrow(dat)
 	acc <- numeric(n)
    obj <- numeric(n)
-	tpl <- editrules:::getDuration(proc.time())
+	tpl <- getDuration(proc.time())
 	dur <- array(0,dim=c(n,length(tpl)))
 	colnames(dur) <- names(tpl)
 	nit <- numeric(n)
@@ -84,7 +84,7 @@ adjustBlock <- function(E, dat, adjust, w, verbose, ...){
 		out[J,i]    <- y$x
 		acc[i]      <- y$accuracy
       obj[i]      <- y$objective
-		dur[i,]     <- editrules:::getDuration(y$duration)
+		dur[i,]     <- getDuration(y$duration)
 		status[i]   <- y$status
 		nit[i]      <- y$niter
 		status[i]   <- y$status
