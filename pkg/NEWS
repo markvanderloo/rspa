@@ -1,3 +1,6 @@
+version-0.1.5
+- Cleaned code after compilation warnings in CLANG and gcc (Thanks to Brian Ripley)
+
 version-0.1.4
 - Vignette now built using weave engine specification (allowed since R3.0).
 
