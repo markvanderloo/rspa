@@ -27,7 +27,7 @@ SEXP R_dc_solve(SEXP A, SEXP b, SEXP w, SEXP neq, SEXP tol, SEXP maxiter, SEXP x
    // make copies to avoid writing in user space
    SEXP tx;
    PROTECT(tx = allocVector(REALSXP, n));
-   for ( int j=0; j<n; REAL(tx)[j++] = xx[j]);
+   for ( int j=0; j<n; j++) REAL(tx)[j] = xx[j];
 
    double xtol = REAL(tol)[0];
    int xmaxiter = INTEGER(maxiter)[0];

@@ -15,7 +15,7 @@
 #' @name rspa-package
 #' @docType package
 #' @useDynLib rspa
-#'
+#' @import editrules
 {}
 
 

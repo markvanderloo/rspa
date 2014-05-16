@@ -113,7 +113,7 @@ static int get_row_end(int *rows, int nrows, int row_start){
 SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, int ncoef, double *b, int m, int neq ){
 
    int maxcol=0, k;
-   int row_start = 0, row_nr, row_end; 
+   int row_start = 0, row_end; 
 
    SparseConstraints *E = sc_new(m);
 
@@ -123,7 +123,6 @@ SparseConstraints * sc_from_sparse_matrix(int *rows, int *cols, double *coef, in
 
    for ( int irow=0; irow < m; irow++){
       E->b[irow] = b[irow];
-      row_nr = rows[row_start];
       row_end = get_row_end(rows, ncoef, row_start);
      
       E->nrag[irow]    = row_end - row_start;

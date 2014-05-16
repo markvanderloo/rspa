@@ -23,7 +23,7 @@ SEXP R_solve_sc_spa(SEXP p, SEXP x, SEXP w, SEXP tol, SEXP maxiter){
    SEXP tx;
 
    PROTECT(tx = allocVector(REALSXP, length(x)));
-   for ( int i=0; i<length(x); REAL(tx)[i++] = xx[i]);
+   for ( int i=0; i<length(x); i++) REAL(tx)[i] = xx[i];
 
    // solve
    s = solve_sc_spa(xp, REAL(w) , &xtol, &xmaxiter, REAL(tx)); 
