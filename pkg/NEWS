@@ -1,3 +1,7 @@
+version-0.1.5
+- bugfix in adjustRecords: weights were ignored (thanks to Daan Zult).
+- several updates on unit tests.
+
 version-0.1.4
 - Vignette now built using weave engine specification (allowed since R3.0).
 

@@ -42,7 +42,7 @@ double sc_diffsum(SparseConstraints *E, double *x){
 
    for ( int i=E->neq; i<E->nconstraints; i++){
       dt = sc_row_vec(E, i, x) - E->b[i];
-      if ( dt < E->b[i] ) d += dt;
+      if ( dt > 0.0 ) d += dt;
    }
    
    return d;
