@@ -1,4 +1,4 @@
-version-0.1.5
+version-0.1.6
 - bugfix in adjustRecords: weights were ignored (thanks to Daan Zult).
 - several updates on unit tests.
 
