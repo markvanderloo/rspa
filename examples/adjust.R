@@ -1,6 +1,6 @@
 
 # a very simple adjustment example
-E <- editmatrix(expression(
+E <- editrules::editmatrix(expression(
 	x + y == 10,
 	x > 0,
 	y > 0
