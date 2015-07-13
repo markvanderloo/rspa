@@ -1,3 +1,6 @@
+version 0.1.8
+- updated for compliance to new CRAN policies
+
 version 0.1.7
 - solved issues with vignette building on CRAN side
 
