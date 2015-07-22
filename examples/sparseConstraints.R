@@ -1,5 +1,5 @@
 # define constraints from editmatrix object:
-E <- editmatrix(expression(
+E <- editrules::editmatrix(expression(
      x1 + x8 ==  950,
      x3 + x4 ==  950 ,
      x6 + x7 == x8,
@@ -22,8 +22,8 @@ sparseConstraints(rc, b, neq=3)
 
 # same constraints, from dense matrix
 
-A <- getA(E)
-b <- getb(E)
+A <- editrules::getA(E)
+b <- editrules::getb(E)
 sparseConstraints(A, b, neq=3)
 
 

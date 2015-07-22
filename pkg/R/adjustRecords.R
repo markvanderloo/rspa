@@ -80,7 +80,7 @@ adjustBlock <- function(E, dat, adjust, w, verbose, ...){
 		if (!any(J)) next
 	
 		e <- reduce(substValue(E,names(r)[!J],r[!J]))
-		y <- adjust(e, r[J],...)
+		y <- adjust(e, r[J], w = w[i,J],...)
 		out[J,i]    <- y$x
 		acc[i]      <- y$accuracy
       obj[i]      <- y$objective

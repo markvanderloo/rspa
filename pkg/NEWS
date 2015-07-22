@@ -1,7 +1,14 @@
-version-0.1.5
-- Cleaned code after compilation warnings in CLANG and gcc (Thanks to Brian Ripley)
+version 0.1.8
+- updated for compliance to new CRAN policies
 
-version-0.1.4
+version 0.1.7
+- solved issues with vignette building on CRAN side
+
+version 0.1.6
+- bugfix in adjustRecords: weights were ignored (thanks to Daan Zult).
+- several updates on unit tests.
+
+version 0.1.4
 - Vignette now built using weave engine specification (allowed since R3.0).
 
 version 0.1.3
