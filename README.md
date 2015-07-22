@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/markvanderloo/rspa.svg)](https://travis-ci.org/markvanderloo/rspa) [![CRAN](http://www.r-pkg.org/badges/version/rspa)](http://cran.r-project.org/web/packages/rspa/NEWS)
+[![Downloads](http://cranlogs.r-pkg.org/badges/rspa)](http://cran.r-project.org/package=rspa/) 
+
+
 rspa
 ====
 
