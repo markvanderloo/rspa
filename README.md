@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/markvanderloo/rspa.svg)](https://travis-ci.org/markvanderloo/rspa) [![CRAN](http://www.r-pkg.org/badges/version/rspa)](http://cran.r-project.org/web/packages/rspa/NEWS)
+[![Build Status](https://travis-ci.org/markvanderloo/rspa.svg)](https://travis-ci.org/markvanderloo/rspa) 
+[![Coverage Status](https://coveralls.io/repos/markvanderloo/rspa/badge.svg?branch=master&service=github)](https://coveralls.io/github/markvanderloo/rspa?branch=master) [![CRAN](http://www.r-pkg.org/badges/version/rspa)](http://cran.r-project.org/web/packages/rspa/NEWS)
 [![Downloads](http://cranlogs.r-pkg.org/badges/rspa)](http://cran.r-project.org/package=rspa/) 
 
 
