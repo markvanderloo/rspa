@@ -20,6 +20,7 @@
 #' }
 #'
 #' @export
+#' @keywords internal
 sparseConstraints = function(x, ...){
     UseMethod("sparseConstraints")
 }

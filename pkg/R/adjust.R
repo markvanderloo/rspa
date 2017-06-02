@@ -52,6 +52,7 @@
 #'
 #'
 #' @export
+#' @keywords internal
 adjust <- function(object, ...){
    UseMethod('adjust')
 }

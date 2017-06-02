@@ -38,7 +38,7 @@ new_status <- function(n){
 #'    }
 #'
 #'
-#'
+#' @keywords internal
 {}
 
 
@@ -49,6 +49,7 @@ new_status <- function(n){
 #' 
 #' @rdname adjusted
 #' @export
+#' @keywords internal
 print.adjusted <- function(x, maxprint = 10, ...){
     cat("Object of class 'adjusted'\n")
     cat(sprintf("  Status    : %s (using '%s' method)\n", x$status, x$method))

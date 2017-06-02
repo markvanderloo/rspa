@@ -16,7 +16,7 @@ r:
  - devel
 
 before_install:
-  - R -e "install.packages(c('devtools','roxygen2','testthat','knitr','editrules','validate'))"
+  - R -e "install.packages(c('devtools','roxygen2','testthat','knitr','editrules','lintools','validate'))"
   - R -e "devtools::document('./pkg')"
   - cd ./pkg
 

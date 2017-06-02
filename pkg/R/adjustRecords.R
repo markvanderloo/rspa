@@ -22,6 +22,7 @@
 #'
 #' @return An object of class \code{adjustedRecords}
 #' @export
+#' @keywords internal
 adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(dat)), verbose=FALSE, ... ){
   stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="match_restrictions")
