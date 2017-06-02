@@ -1,8 +1,15 @@
-#' Adjust a data to meet linear (in)equality constraints
-#'
+#' DEPRECATED Adjust a data to meet linear (in)equality constraints
+#' 
 #' Adjust a vector \eqn{\boldsymbol{x}} to meet
 #' constraints \eqn{\boldsymbol{Ax} \leq \boldsymbol{b}}. 
-#' 
+#' As of version 0.2 this function is deprecated. Please use
+#' \itemize{
+#' \item{\code{\link{match_constraints}} to adjust a data.frame of records to a set of restrictions stored
+#' in a validator object (of package validate).}
+#' \item{\code{\link[lintools]{project}} from package \code{\link[lintools]{lintools}} to replace \code{adjust.matrix}}
+#' \item{\code{\link[lintools]{sparse_project}} from pacakge \code{\link[lintools]{lintools}} to replace \code{adjust.sparseConstraints}}
+#' }
+#'  
 #'
 #' @param object an \code{R} object describing constraints (see details)
 #' @param ... Arguments to be passed to other methods
@@ -102,6 +109,7 @@ adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','s
 #' @export
 #' @rdname adjust
 adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
+  .Deprecated(new="lintools::sparse_project")
    stopifnot(
 		is.numeric(x),
 		length(x) == object$.nvar(),
@@ -133,6 +141,7 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 #' @export
 #' @rdname adjust
 adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
+  .Deprecated(new="lintools::project")
    stopifnot(
 		is.numeric(x),
 		length(x) == ncol(object),

@@ -1,4 +1,7 @@
-#' Generate sparse set of constraints.
+#' DEPRECATED Generate sparse set of constraints.
+#'
+#' This function is deprecated. Please use function \code{\link[lintools]{sparse_constraints}} from package
+#' \code{\link[lintools]{lintools}} instead.
 #'
 #' @param x R object to be translated to sparseConstraints format.
 #' @param ... options to be passed to other methods
@@ -20,7 +23,6 @@
 #' @example ../examples/sparseConstraints.R
 sparseConstraints = function(x, ...){
     UseMethod("sparseConstraints")
-
 }
 
 
@@ -30,6 +32,7 @@ sparseConstraints = function(x, ...){
 #' @rdname sparseConstraints
 #' @export
 sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
+   .Deprecated()
    if (!isNormalized(x)) normalize(x)
    x <- reduce(x,tol=tol)
    ieq <- getOps(x) == '=='
@@ -49,6 +52,7 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 #' @rdname sparseConstraints
 #' @export
 sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
+  .Deprecated(new="lintools::sparse_constraints")
 	stopifnot(
 		all_finite(x),
 		is.numeric(b),
@@ -82,6 +86,7 @@ sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
 #' @export
 #' @rdname sparseConstraints
 sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), sorted=FALSE, ...){
+   .Deprecated(new="lintools::sparse_constraints")
    if (length(b) != length(unique(x[,1]))){
       stop("length of b unequal to number of constraints")
    }

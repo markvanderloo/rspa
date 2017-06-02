@@ -1,3 +1,7 @@
+version 0.2.0
+- Functions 'adjust' are now deprecated.
+- New function 'match_constraints' replaces 'adjust'. Works with 'validate::validator' objects. 
+
 version 0.1.8
 - updated for compliance to new CRAN policies
 
