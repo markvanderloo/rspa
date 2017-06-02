@@ -24,7 +24,7 @@ sparseConstraints = function(x, ...){
 }
 
 
-#'
+
 #' @method sparseConstraints editmatrix
 #' @param tol Tolerance for testing where coefficients are zero
 #' @rdname sparseConstraints
@@ -43,8 +43,8 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
    make_sc(e)
 }
 
-#'
-#'
+
+
 #' @method sparseConstraints matrix
 #' @rdname sparseConstraints
 #' @export
@@ -72,7 +72,7 @@ sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
 
 
 
-#'
+
 #' @method sparseConstraints data.frame
 #'
 #' @param b Constant vector
@@ -117,7 +117,7 @@ sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), s
 
 
 
-#' 
+
 #' @method print sparseConstraints
 #' @param range integer vector stating which constraints to print
 #'

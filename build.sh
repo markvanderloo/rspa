@@ -16,11 +16,11 @@ done
 echo "######## Removing building information..."
 rm -rf output
 
-echo "######## Copying DESCRIPTION to pkg directory..."
-cp build/DESCRIPTION pkg
 
 echo "######## Generate documentation..."
-$R -q -f document.R
+## $R -q -f document.R
+$R -e "roxygen2::update_collate('pkg');devtools::document('pkg')"
+
 
 echo "######## Building package in output..."
 mkdir output

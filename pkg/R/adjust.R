@@ -1,4 +1,3 @@
-
 #' Adjust a data to meet linear (in)equality constraints
 #'
 #' Adjust a vector \eqn{\boldsymbol{x}} to meet
@@ -53,7 +52,6 @@ adjust <- function(object, ...){
    UseMethod('adjust')
 }
 
-#'
 #' @method adjust editmatrix
 #' @param method use dense or sparse matrix method.
 #' @export
@@ -100,12 +98,10 @@ adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','s
    y
 }
 
-#'
 #' @method adjust sparseConstraints
 #' @export
 #' @rdname adjust
 adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
-
    stopifnot(
 		is.numeric(x),
 		length(x) == object$.nvar(),
@@ -126,7 +122,6 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 
 
 
-#' 
 #' @param b Constant vector of the constraint system \eqn{Ax\leq b}
 #' @param x The vector to be adjusted
 #' @param neq the first \code{neq} linear relations are equalities.

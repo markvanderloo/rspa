@@ -1,4 +1,5 @@
 #' Adjusted records
+#' 
 #' @name adjustedRecords
 #' @seealso \code{\link{adjustRecords}}
 #' @section Details:
@@ -56,7 +57,6 @@ summary.adjustedRecords <- function(object,...){
 }
 
 
-#'
 #' @method plot adjustedRecords
 #' @rdname adjustedRecords
 #' @export

@@ -12,13 +12,13 @@
 *.log
 *.aux
 
-pkg/DESCRIPTION
-pkg/NAMESPACE
 
 # ignored directories
 output/
 pkg/man/
 bigexample/
 
-
+#rstudio stuff
 .Rproj.user
+*.Rproj
+

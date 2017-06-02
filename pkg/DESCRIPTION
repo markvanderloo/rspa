@@ -14,3 +14,4 @@ BugReports: https://github.com/markvanderloo/rspa/issues
 VignetteBuilder: knitr
 Date: 2015-07-13
 Suggests: knitr, testthat
+RoxygenNote: 6.0.1
