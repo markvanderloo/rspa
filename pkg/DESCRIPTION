@@ -9,10 +9,9 @@ Description: Based on (optionally sparse) quadratic optimization with the main a
 Version: 0.2.0
 Depends: R (>= 2.13.0)
 Imports:  graphics, stats, validate, lintools
-Suggests: editrules
+Suggests: editrules, knitr, testthat
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
 VignetteBuilder: knitr
 Date: 2017-06-02
-Suggests: knitr, testthat
 RoxygenNote: 6.0.1

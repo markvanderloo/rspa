@@ -33,7 +33,7 @@ sparseConstraints = function(x, ...){
 sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
   stopifnot(requireNamespace("editrules",quietly=TRUE))
    .Deprecated()
-   if (!editrules::isNormalized(x)) editrules::normalize(x)
+   if (!editrules::isNormalized(x)) x <- editrules::normalize(x)
    x <- editrules::reduce(x,tol=tol)
    ieq <- editrules::getOps(x) == '=='
    I <- c(which(ieq),which(!ieq))
@@ -52,7 +52,6 @@ sparseConstraints.editmatrix = function(x, tol=1e-8, ...){
 #' @rdname sparseConstraints
 #' @export
 sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
-  stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="lintools::sparse_constraints")
 	stopifnot(
 		all_finite(x),
@@ -87,7 +86,6 @@ sparseConstraints.matrix <- function(x, b, neq=length(b), tol=1e-8,...){
 #' @export
 #' @rdname sparseConstraints
 sparseConstraints.data.frame <- function(x, b, neq=length(b), base=min(x[,2]), sorted=FALSE, ...){
-  stopifnot(requireNamespace("editrules",quietly=TRUE))
    .Deprecated(new="lintools::sparse_constraints")
    if (length(b) != length(unique(x[,1]))){
       stop("length of b unequal to number of constraints")

@@ -107,7 +107,6 @@ adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','s
 #' @export
 #' @rdname adjust
 adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
-  stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="lintools::sparse_project")
    stopifnot(
 		is.numeric(x),
@@ -140,7 +139,6 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 #' @export
 #' @rdname adjust
 adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
-  stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="lintools::project")
    stopifnot(
 		is.numeric(x),
@@ -177,9 +175,6 @@ adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol
    objective <- sqrt(sum(w*(x-as.vector(y))^2))
    new_adjusted(y, t1-t0,"dense", objective, colnames(object))
 } 
-
-
-
 
 
 
