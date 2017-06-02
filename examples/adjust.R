@@ -1,5 +1,6 @@
 
 # a very simple adjustment example
+if(require(editrules)){
 E <- editrules::editmatrix(expression(
 	x + y == 10,
 	x > 0,
@@ -21,6 +22,6 @@ x1 <- adjust(E,x0,w=1/x0)
 
 x0[1]/x0[2]
 x1$x[1] / x1$x[2]
-
+}
 
 

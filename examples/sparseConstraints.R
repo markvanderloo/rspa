@@ -1,3 +1,4 @@
+if (require(editrules)){
 # define constraints from editmatrix object:
 E <- editrules::editmatrix(expression(
      x1 + x8 ==  950,
@@ -25,6 +26,6 @@ sparseConstraints(rc, b, neq=3)
 A <- editrules::getA(E)
 b <- editrules::getb(E)
 sparseConstraints(A, b, neq=3)
-
+}
 
 

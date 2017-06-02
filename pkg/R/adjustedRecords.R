@@ -1,4 +1,7 @@
-#' Adjusted records
+#' DEPRECATED Adjusted records
+#' 
+#' As this is output from deprecated \code{adjustRecords}, this object is
+#' deprecated as of version 0.2.0 as well. 
 #' 
 #' @name adjustedRecords
 #' @seealso \code{\link{adjustRecords}}

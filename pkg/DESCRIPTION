@@ -6,12 +6,13 @@ Type: Package
 LazyLoad: yes
 Author: Mark van der Loo
 Description: Based on (optionally sparse) quadratic optimization with the main algorithms implemented in C. Includes features for easy processing of many (smaller) records. The algorithm has been tested on fairly large optimization problems with up to a few million variables and several hundred thousand restrictions.
-Version: 0.1.8
+Version: 0.2.0
 Depends: R (>= 2.13.0)
-Imports: editrules, graphics, stats
+Imports:  graphics, stats, validate, lintools
+Suggests: editrules
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
 VignetteBuilder: knitr
-Date: 2015-07-13
+Date: 2017-06-02
 Suggests: knitr, testthat
 RoxygenNote: 6.0.1

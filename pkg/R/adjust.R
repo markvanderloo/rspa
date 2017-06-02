@@ -4,8 +4,6 @@
 #' constraints \eqn{\boldsymbol{Ax} \leq \boldsymbol{b}}. 
 #' As of version 0.2 this function is deprecated. Please use
 #' \itemize{
-#' \item{\code{\link{match_constraints}} to adjust a data.frame of records to a set of restrictions stored
-#' in a validator object (of package validate).}
 #' \item{\code{\link[lintools]{project}} from package \code{\link[lintools]{lintools}} to replace \code{adjust.matrix}}
 #' \item{\code{\link[lintools]{sparse_project}} from pacakge \code{\link[lintools]{lintools}} to replace \code{adjust.sparseConstraints}}
 #' }
@@ -53,7 +51,6 @@
 #'
 #'
 #'
-#' @example ../examples/adjust.R
 #' @export
 adjust <- function(object, ...){
    UseMethod('adjust')
@@ -64,19 +61,20 @@ adjust <- function(object, ...){
 #' @export
 #' @rdname adjust
 adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','sparse'), ...){
+  stopifnot(requireNamespace("editrules",quietly=TRUE))
   method <- match.arg(method)
-   if (!isNormalized(object)) object <- normalize(object)
-	object <- reduce(object)
+   if (!editrules::isNormalized(object)) object <- editrules::normalize(object)
+	object <- editrules::reduce(object)
    # match names 
    if ( !is.null(names(x)) ){
-      J <- match(getVars(object), names(x))
+      J <- match(editrules::getVars(object), names(x))
    } else {
-      stopifnot(length(x) == length(getVars(object)))
+      stopifnot(length(x) == length(editrules::getVars(object)))
       J <- 1:length(x)
    }
    u <- x[J]
    w <- w[J]
-   ops <- getOps(object)
+   ops <- editrules::getOps(object)
    I <- order(ops,decreasing=TRUE)
    neq <- sum(ops == "==")
 
@@ -90,8 +88,8 @@ adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','s
       )
 	} else {
 		y <- adjust.matrix(
-			object = getA(object)[I,,drop=FALSE], 
-			b      = getb(object)[I], 
+			object = editrules::getA(object)[I,,drop=FALSE], 
+			b      = editrules::getb(object)[I], 
 			x      = u,
 			neq    = neq,
          w      = w,
@@ -109,6 +107,7 @@ adjust.editmatrix <- function(object, x, w=rep(1,length(x)), method=c('dense','s
 #' @export
 #' @rdname adjust
 adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
+  stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="lintools::sparse_project")
    stopifnot(
 		is.numeric(x),
@@ -141,6 +140,7 @@ adjust.sparseConstraints <- function(object, x, w=rep(1.0,length(x)), tol=1e-2, 
 #' @export
 #' @rdname adjust
 adjust.matrix <- function(object, b, x, neq=length(b), w=rep(1.0,length(x)), tol=1e-2, maxiter=1000L, ...){
+  stopifnot(requireNamespace("editrules",quietly=TRUE))
   .Deprecated(new="lintools::project")
    stopifnot(
 		is.numeric(x),

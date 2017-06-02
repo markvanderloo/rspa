@@ -1,7 +1,7 @@
-#' Adjust records in a \code{data.frame}
+#' DEPRECATED Adjust records in a \code{data.frame}
 #'
 #' A convenient wrapper around \code{\link{adjust}} that loops over all records in a
-#' \code{data.frame}
+#' \code{data.frame}. DEPRECATED. See \code{\link{match_restrictions}}.
 #'
 #' @param E a \code{\link[editrules]{editmatrix}}
 #' @param dat a \code{data.frame}
@@ -23,6 +23,8 @@
 #' @return An object of class \code{adjustedRecords}
 #' @export
 adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(dat)), verbose=FALSE, ... ){
+  stopifnot(requireNamespace("editrules",quietly=TRUE))
+  .Deprecated(new="match_restrictions")
 	if (is.vector(w)){ 
 		stopifnot(length(w) == ncol(dat))
 		w <- t(array(w,dim=dim(dat)[2:1]))
@@ -31,7 +33,7 @@ adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(
 		
    stopifnot(
       all(dim(adjust) == dim(dat)),
-      all(getVars(E) %in% names(dat)),
+      all(editrules::getVars(E) %in% names(dat)),
 	   all_finite(w),
 		is.logical(adjust),
 		sum(is.na(adjust))==0,
@@ -43,13 +45,13 @@ adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(
    if ( is.null(colnames(adjust)) ) colnames(adjust) <- nm
    if ( is.null(colnames(w)) ) colnames(w) <- nm 
 
-   B <- blocks(E)
+   B <- editrules::blocks(E)
    status = NULL
    for ( i in 1:length(B) ){
       if (verbose ) cat(sprintf("adjusting block %4d of %4d\n",i, length(B)))
       e <- B[[i]]
 		
-      vars <- nm[nm %in% getVars(e)]
+      vars <- nm[nm %in% editrules::getVars(e)]
       adj <- adjustBlock(e, dat[vars], adjust[,vars,drop=FALSE], w[,vars,drop=FALSE], verbose=verbose, ...) 
       dat[vars] <- adj$adjusted
       status <- status %++% adj$status 
@@ -62,7 +64,7 @@ adjustRecords <- function(E, dat, adjust=array(TRUE,dim=dim(dat)), w=rep(1,ncol(
 
 
 adjustBlock <- function(E, dat, adjust, w, verbose, ...){
-
+  stopifnot(requireNamespace("editrules",quietly=TRUE))
 	out <- t(dat)
 	n <- nrow(dat)
 	acc <- numeric(n)
@@ -79,7 +81,7 @@ adjustBlock <- function(E, dat, adjust, w, verbose, ...){
 		J <- adjust[i,]
 		if (!any(J)) next
 	
-		e <- reduce(substValue(E,names(r)[!J],r[!J]))
+		e <- editrules::reduce(editrules::substValue(E,names(r)[!J],r[!J]))
 		y <- adjust(e, r[J], w = w[i,J],...)
 		out[J,i]    <- y$x
 		acc[i]      <- y$accuracy
