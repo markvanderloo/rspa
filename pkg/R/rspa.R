@@ -14,7 +14,7 @@
 #' }
 #' @name rspa-package
 #' @docType package
-#' @useDynLib rspa
+#' @useDynLib rspa, .registration=TRUE
 #' @import graphics validate lintools
 #' @importFrom stats density
 {}
