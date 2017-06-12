@@ -5,7 +5,12 @@ Title: Adapt Numerical Records to Fit (in)Equality Restrictions
 Type: Package
 LazyLoad: yes
 Author: Mark van der Loo
-Description: Based on (optionally sparse) quadratic optimization with the main algorithms implemented in C. Includes features for easy processing of many (smaller) records. The algorithm has been tested on fairly large optimization problems with up to a few million variables and several hundred thousand restrictions.
+Description: Minimally adjust the values of numerical records in a data.frame, such
+    that each record satisfies a predefined set of equality and/or inequality
+    constraints. The constraints can be defined using the 'validate' package. 
+    The core algorithms have recently been moved to the 'lintools' package,
+    refer to 'lintools' for a more basic interface and access to a sparse version
+    of the algorithm.
 Version: 0.2.0
 Depends: R (>= 2.13.0)
 Imports:  graphics, stats, validate, lintools
@@ -13,5 +18,5 @@ Suggests: editrules, knitr, testthat
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
 VignetteBuilder: knitr
-Date: 2017-06-02
+Date: 2017-06-12
 RoxygenNote: 6.0.1

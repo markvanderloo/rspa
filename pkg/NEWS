@@ -1,9 +1,9 @@
 version 0.2.0
 - Pakcage now imports from 'validate'
-- Moved imported package 'editrules' is now suggested
+- Imported package 'editrules' is now suggested
 - New function 'match_constraints' Works with 'validate::validator' objects. 
-- Function 'adjust' is now deprecated. (see match_constraints)
-- Function 'sparseConstraints' is now deprecated (see the lintools package)
+- Function 'adjust' is now deprecated. (see 'match_constraints')
+- Function 'sparseConstraints' is now deprecated (see the 'lintools' package)
 - Updated native routine registration as now required by CRAN
 
 version 0.1.8
