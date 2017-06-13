@@ -136,6 +136,6 @@ tag_missings <- function(dat,...){
 #' @return A \code{logical} matrix, or \code{NULL}
 #' @export
 tagged_values <- function(dat,...){
-  attr(data,MISSTAG)
+  attr(dat,MISSTAG)
 }
 
