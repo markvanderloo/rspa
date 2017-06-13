@@ -6,10 +6,11 @@
 #'
 #' @param dat A \code{data.frame}
 #' @param restrictions An object of class \code{\link[validate]{validator}}
-#' @param adjust (optional) A \code{logical} matrix of dimensions \code{dim(dat)} where \code{TRUE} indicates
-#'     that a value may be adjusted. When missing, the \code{\link{tagged_values}}
-#'     are used. If no tagging was applied, all adjust will default to an all \code{TRUE}
-#'     matrix with dimensions equal to \code{dim(dat)}.
+#' @param adjust (optional) A \code{logical} matrix of dimensions
+#'   \code{dim(dat)} where \code{TRUE} indicates that a value may be adjusted.
+#'   When missing, the \code{\link{tagged_values}} are used. If no tagging was
+#'   applied, adjust will default to an all \code{TRUE} matrix with
+#'   dimensions equal to \code{dim(dat)}.
 #' @param weight A weight vector of length \code{ncol(dat)} or a matrix of dimensions \code{dim(dat)}.
 #' @param ... arguments passed to \code{\link[lintools]{project}}.
 #' 
@@ -17,6 +18,8 @@
 #' @return \code{dat}, with values adapted.
 #' 
 #' @example ../examples/match_restrictions.R
+#' 
+#' @seealso \code{\link{tag_missing}}
 #' 
 #' 
 #' @export
@@ -120,10 +123,11 @@ MISSTAG <- "__MISSINGS__"
 #' @param dat \code{[data.frame]} to be tagged
 #' @param ... Currently not used.
 #'
+#' @family tagging
 #'
 #' @return \code{dat}, tagged for missing values.
 #' @export
-tag_missings <- function(dat,...){
+tag_missing <- function(dat, ...){
   attr(dat, MISSTAG) <- is.na(dat)
   dat
 }
@@ -132,6 +136,9 @@ tag_missings <- function(dat,...){
 #' 
 #' @param dat \code{[data.frame]}
 #' @param ... Currently not used
+#'
+#' @family tagging
+#'
 #'
 #' @return A \code{logical} matrix, or \code{NULL}
 #' @export
