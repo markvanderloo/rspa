@@ -6,8 +6,10 @@
 #'
 #' @param dat A \code{data.frame}
 #' @param restrictions An object of class \code{\link[validate]{validator}}
-#' @param adjust A \code{logical} matrix of dimensions \code{dim(dat)} where \code{TRUE} indicates
-#'     that a value may be adjusted.
+#' @param adjust (optional) A \code{logical} matrix of dimensions \code{dim(dat)} where \code{TRUE} indicates
+#'     that a value may be adjusted. When missing, the \code{\link{tagged_values}}
+#'     are used. If no tagging was applied, all adjust will default to an all \code{TRUE}
+#'     matrix with dimensions equal to \code{dim(dat)}.
 #' @param weight A weight vector of length \code{ncol(dat)} or a matrix of dimensions \code{dim(dat)}.
 #' @param ... arguments passed to \code{\link[lintools]{project}}.
 #' 
@@ -19,11 +21,16 @@
 #' 
 #' @export
 match_restrictions <- function(dat, restrictions
-      , adjust=array(TRUE, dim=dim(dat))
+      , adjust
       , weight=rep(1,ncol(dat))
       , ...){
   stopifnot(inherits(dat,"data.frame"))
   stopifnot(inherits(restrictions,"validator"))
+  if (missing(adjust)){
+    adjust <- tagged_values(dat)
+    if (is.null(adjust))
+      adjust <- array(TRUE, dim=dim(dat))
+  }
   
   if (is.vector(weight)){
     stopifnot(length(weight)==ncol(dat))
@@ -100,5 +107,35 @@ stopf <- function(fmt,...){
 
 warnf <- function(fmt,...){
   warning(sprintf(fmt,...), call. = FALSE)
+}
+
+
+MISSTAG <- "__MISSINGS__"
+
+#' Tag currently missing elements of a data.frame
+#'
+#' Attach an attribute that marks which cells are empty (NA).
+#'
+#'
+#' @param dat \code{[data.frame]} to be tagged
+#' @param ... Currently not used.
+#'
+#'
+#' @return \code{dat}, tagged for missing values.
+#' @export
+tag_missings <- function(dat,...){
+  attr(dat, MISSTAG) <- is.na(dat)
+  dat
+}
+
+#' Retrieve tagged cell positions
+#' 
+#' @param dat \code{[data.frame]}
+#' @param ... Currently not used
+#'
+#' @return A \code{logical} matrix, or \code{NULL}
+#' @export
+tagged_values <- function(dat,...){
+  attr(data,MISSTAG)
 }
 
