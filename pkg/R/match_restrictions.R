@@ -12,6 +12,7 @@
 #'   applied, adjust will default to an all \code{TRUE} matrix with
 #'   dimensions equal to \code{dim(dat)}.
 #' @param weight A weight vector of length \code{ncol(dat)} or a matrix of dimensions \code{dim(dat)}.
+#' @param remove_tag if a value position indicator is present, remove it?
 #' @param ... arguments passed to \code{\link[lintools]{project}}.
 #' 
 #' 
@@ -26,6 +27,7 @@
 match_restrictions <- function(dat, restrictions
       , adjust
       , weight=rep(1,ncol(dat))
+      , remove_tag=TRUE
       , ...){
   stopifnot(inherits(dat,"data.frame"))
   stopifnot(inherits(restrictions,"validator"))
@@ -93,7 +95,7 @@ match_restrictions <- function(dat, restrictions
     M[names(constr$x),i] <- out$x
   }
   dat[in_res] <- t(M)
-  dat
+  if (remove_tag) remove_tag(dat) else dat
 }
 
 
@@ -145,4 +147,22 @@ tag_missing <- function(dat, ...){
 tagged_values <- function(dat,...){
   attr(dat,MISSTAG)
 }
+
+#' Remove cell position tags
+#' 
+#' @param dat \code{[data.frame]}
+#' @param ... Currently not used
+#'
+#' @family tagging
+#' @return \code{dat} with tag removed
+#' 
+#' @export
+remove_tag <- function(dat,...){
+  if (!is.null(attr(dat,MISSTAG))){
+    attr(dat,MISSTAG) <- NULL
+  }
+  dat
+}
+
+
 

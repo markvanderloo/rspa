@@ -2,8 +2,9 @@ version 0.2.0
 - Pakcage now imports from 'validate'
 - Imported package 'editrules' is now suggested
 - New function 'match_constraints' Works with 'validate::validator' objects. 
-- New function 'tag_missings' records missing value locatiions.
+- New function 'tag_missing' records missing value locatiions.
 - New function 'tagged_values' retrieves tagged value locations.
+- New function 'remove_tag' removes tagged value locations
 - Function 'adjust' is now deprecated. (see 'match_constraints')
 - Function 'sparseConstraints' is now deprecated (see the 'lintools' package)
 - Updated native routine registration as now required by CRAN

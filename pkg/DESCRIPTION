@@ -17,5 +17,5 @@ Imports:  graphics, stats, validate, lintools
 Suggests: editrules, knitr, testthat
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
-Date: 2017-06-13
+Date: 2017-06-14
 RoxygenNote: 6.0.1

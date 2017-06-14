@@ -23,5 +23,15 @@ x1 <- match_restrictions(x0, v, weight=1/as.matrix(x0))
 x0[,1]/x0[,2]
 x1[,1] / x1[2]
 
+# example of tag usage
+v <- validate::validator(x + y == 1, x>0,y>0)
+d <- data.frame(x=NA,y=0.5)
+d <- tag_missing(d)
+# impute
+d[1,1] <- 1
+
+# only the tagged values will be altered. The tag is
+# removed afterwards.
+match_restrictions(d,v)
 
 
