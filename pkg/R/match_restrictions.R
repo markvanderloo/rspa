@@ -83,7 +83,8 @@ match_restrictions <- function(dat, restrictions
                 , b = constr$b
                 , x = x
                 , neq = sum(L$operators=="==")
-                , nleq = sum(L$operators=="<="))
+                , nleq = sum(L$operators=="<=")
+                , implied_equations=FALSE)
     
     wt <- weight[i, names(constr$x)]
     out <- lintools::project(x = constr$x

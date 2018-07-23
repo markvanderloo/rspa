@@ -1,4 +1,8 @@
-version 0.2.0
+version 0.2.2
+- bugfix: match_restrictions would try and alter the wrong variables in cases where
+  variable order in the rule set was different from variable order in the data.
+
+version 0.2.1
 - Pakcage now imports from 'validate'
 - Imported package 'editrules' is now suggested
 - New function 'match_constraints' Works with 'validate::validator' objects. 

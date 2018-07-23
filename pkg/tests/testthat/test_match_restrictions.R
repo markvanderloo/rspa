@@ -14,7 +14,13 @@ test_that("adjusts correctly",{
     , data.frame(x=0,y=1,z=0)
     , tolerance=0.01
   )
-  
+ 
+  # order of variables in data different from order of
+  # variables in validator.
+  dat <- data.frame(y=2,x=0.2)
+  v <- validator(x+y==1,x>=0)
+  expect_equal(match_restrictions(dat,v)
+   , data.frame(y=1, x=0), tolerance=0.01)
   
 })
 
