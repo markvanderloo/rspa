@@ -9,13 +9,12 @@ Description: Minimally adjust the values of numerical records in a data.frame, s
     that each record satisfies a predefined set of equality and/or inequality
     constraints. The constraints can be defined using the 'validate' package. 
     The core algorithms have recently been moved to the 'lintools' package,
-    refer to 'lintools' for a more basic interface and access to a sparse version
-    of the algorithm.
+    refer to 'lintools' for a more basic interface and access to a version
+    of the algorithm that works with sparse matrices.
 Version: 0.2.2
 Depends: R (>= 2.13.0)
 Imports:  graphics, stats, validate, lintools
 Suggests: editrules, knitr, testthat
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
-Date: 2017-06-26
 RoxygenNote: 6.0.1
