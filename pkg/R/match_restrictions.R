@@ -16,6 +16,13 @@
 #' @param ... arguments passed to \code{\link[lintools]{project}}.
 #' 
 #' 
+#' @section Note on inequality restrictions:
+#' All inequality restrictions of the form \eqn{a.x < b} are treated as \eqn{a.x \leq b}.
+#' The idea is to project the original record \eqn{x} onto the boundary defined by
+#' the (in)equations. Projection on a boundary defined by a strict inequation is 
+#' illdefined sice the value \eqn{b} in the restriction \eqn{a.x < b} is strictly
+#' outside the valid region.
+#'
 #' @return \code{dat}, with values adapted.
 #' 
 #' @example ../examples/match_restrictions.R

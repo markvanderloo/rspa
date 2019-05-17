@@ -1,5 +1,6 @@
 version 0.2.4
 - switched to 'tinytest' testing framework
+- documentation update (issue #2)
 
 version 0.2.3
 - bugfix: match_restrictions would try and alter the wrong variables in cases where
