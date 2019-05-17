@@ -1,0 +1,10 @@
+bibentry(bibtype = "book",
+ title = "Statistical Data Cleaning with Applications in R"
+ , author = c(person("M.P.J.", "van der Loo"),person("E.","De Jonge"))
+ , year = 2018
+ , publisher = "John Wiley and Sons, Inc",
+ , address = "New York",
+ , isbn = "1118897153"
+ , isbn13 = "978-1-118-89715-7"
+ , DOI    = "10.1002/9781118897126"
+)
