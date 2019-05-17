@@ -1,4 +1,7 @@
-version 0.2.2
+version 0.2.4
+- switched to 'tinytest' testing framework
+
+version 0.2.3
 - bugfix: match_restrictions would try and alter the wrong variables in cases where
   variable order in the rule set was different from variable order in the data.
 

@@ -1,6 +1,7 @@
 
-context("match_restrictions")
-test_that("adjusts correctly",{
+## match_restrictions
+# adjusts correctly
+  library(validate)
   v <- validator(x + y == 1, x > 0, y >= 0)
   dat <- data.frame(x=1,y=2)
   expect_equal( match_restrictions(dat,v)
@@ -22,19 +23,17 @@ test_that("adjusts correctly",{
   expect_equal(match_restrictions(dat,v)
    , data.frame(y=1, x=0), tolerance=0.01)
   
-})
 
 
-context("tagging")
+## tagging
 
-test_that("tagging works",{
+## tagging works
   w <- women
   w[1,1] <- NA
   w <- tag_missing(w)
   expect_identical(tagged_values(w),is.na(w))
-})
 
-test_that("tags are picked up",{
+## tags are picked up
   d <- data.frame(x=NA,y=0.5)
   d <- tag_missing(d)
   d$x <- 1
@@ -43,7 +42,6 @@ test_that("tags are picked up",{
     match_restrictions(d,v)
     , data.frame(x=0.5,y=0.5)
   )
-})
 
 
 

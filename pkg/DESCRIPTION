@@ -11,10 +11,11 @@ Description: Minimally adjust the values of numerical records in a data.frame, s
     The core algorithms have recently been moved to the 'lintools' package,
     refer to 'lintools' for a more basic interface and access to a version
     of the algorithm that works with sparse matrices.
-Version: 0.2.3
+Version: 0.2.4
 Depends: R (>= 2.13.0)
-Imports:  graphics, stats, validate, lintools
-Suggests: editrules, knitr, testthat
+Imports: graphics, stats, validate, lintools
+Suggests: editrules, knitr, tinytest
 URL: https://github.com/markvanderloo/rspa
 BugReports: https://github.com/markvanderloo/rspa/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8

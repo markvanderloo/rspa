@@ -1,9 +1,9 @@
 
 
-context("adjustRecords")
+## adjustRecords
 if (requireNamespace("editrues",quietly=TRUE)){
   
-test_that("weights are used",{
+## weights are used 
   E <- editrules::editmatrix(expression(
     x + y == 1,
     x > 0,
@@ -24,7 +24,6 @@ test_that("weights are used",{
       , adjust(E,unlist(dat[1,]),w=c(2,1,1))$x 
     )
   })
-})
 }
 
 

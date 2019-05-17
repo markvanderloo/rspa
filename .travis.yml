@@ -16,8 +16,8 @@ r:
  - devel
 
 before_install:
-  - R -e "install.packages(c('pkgload','devtools','roxygen2','testthat','knitr','editrules','lintools','validate'))"
-  - R -e "pkgload::load_all('./pkg');devtools::document('./pkg')"
+  - R -e "install.packages(c('pkgload','roxygen2','tinytest','knitr','editrules','lintools','validate'))"
+  - R -e "pkgload::load_all('./pkg');roxygen::roxygenize('./pkg')"
   - cd ./pkg
 
 r_packages:
