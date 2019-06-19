@@ -18,13 +18,13 @@
 #' \code{adjust} is a generic function allowing several definitions of the constraints in \code{object}.
 #'
 #' \itemize{
-#'  \item[editmatrix]{If \code{object} is an \code{editmatrix}, the function will 
+#'  \item{\code{editmatrix}:If \code{object} is an \code{editmatrix}, the function will 
 #'    try to match the names of \code{x} to the variable names in \code{object} before further
 #'    processing. In that case the \code{length} of \code{x} is unimportant, as long as all variables in \code{object} 
 #'    are also in \code{x}. Depending on the choice of \code{method}, \code{object} is converted to \code{matrix} or 
 #'    \code{sparseConstraints} format before solving the adjustment problem.
 #'  }
-#'  \item[matrix]{If \code{object} is a \code{matrix}, you also need to provide the constant vector
+#'  \item{\code{matrix}: If \code{object} is a \code{matrix}, you also need to provide the constant vector
 #'   \code{b} and the number of equations \code{neq} to define the problem. It is assumed that the first
 #'   \code{neq} rows of \code{object} and the first \code{new} elements of \code{b} correspond to equalities. No names are matched, so \code{x}
 #'    must be in the correct order and must be of the right dimension.
@@ -32,7 +32,7 @@
 #'    a \code{matrix} problem to the sparse version.
 #'  } 
 #'
-#' \item[sparseConstraints] {If \code{object} is of class \code{\link{sparseConstraints}}, 
+#' \item{\code{sparseConstraints}: If \code{object} is of class \code{\link{sparseConstraints}}, 
 #'   the sparse method is used to adjust \code{x}. Some basic checks on \code{x} and \code{w} 
 #'   are performed, but no attempt is made to match names of \code{x} to those of \code{object}.
 #' }
