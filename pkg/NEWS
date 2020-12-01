@@ -1,3 +1,6 @@
+version 0.2.6
+- Fix: warning message on non convergence did not match the reason.
+
 version 0.2.5
 - Documentation format update by CRAN request.
 

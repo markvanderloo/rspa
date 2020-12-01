@@ -110,8 +110,7 @@ match_restrictions <- function(dat, restrictions
 
 
 CONV_MSG <- c(
-  ""
-  , "could not allocate enough memory"
+    "could not allocate enough memory"
   , "divergence detected (set of restrictions may be contradictory)"
   , "maximum number of iterations reached"
 )
