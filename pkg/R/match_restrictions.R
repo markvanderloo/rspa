@@ -57,6 +57,15 @@ match_restrictions <- function(dat, restrictions
   
   # Get linear restrictions, sort in normalized order.
   L <- restrictions$linear_coefficients(normalize=TRUE)
+  strict_ineqs <- L$operators %in% c("<",">")
+  if (any(strict_ineqs)){
+    nm <- paste(names(restrictions)[strict_ineqs], collapse=", ")
+    
+    warnf("Some restrictions are strict inequalities of the form 
+'a < b' or 'a > b'. These will be treated as 'a <= b' or 'a >= b'
+Strict inequalities: %s",nm)
+  }
+
   i <- order(L$operators, decreasing = TRUE)
   L$A <- L$A[i,,drop=FALSE]
   L$b <- L$b[i,,drop=FALSE]

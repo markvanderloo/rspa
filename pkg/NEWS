@@ -1,5 +1,7 @@
 version 0.2.6
+- 'match_restrictions' now warns in the case of strict inequalities.
 - Fix: warning message on non convergence did not match the reason.
+
 
 version 0.2.5
 - Documentation format update by CRAN request.
