@@ -45,6 +45,10 @@ expect_equivalent(
   , data.frame(x=0.5,y=0.5)
 )
 
+# regression test (Thanks to Patrick Driessens)
+# the 'row.names=1L' argument caused 
+expect_silent(match_restrictions(data.frame(x=1,y=1), validator(x>=0)))
+
 
 
 

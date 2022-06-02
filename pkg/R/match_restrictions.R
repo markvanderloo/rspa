@@ -32,13 +32,13 @@
 #' 
 #' @export
 match_restrictions <- function(dat, restrictions
-      , adjust
+      , adjust=NULL
       , weight=rep(1,ncol(dat))
       , remove_tag=TRUE
       , ...){
   stopifnot(inherits(dat,"data.frame"))
   stopifnot(inherits(restrictions,"validator"))
-  if (missing(adjust)){
+  if (is.null(adjust)){
     adjust <- tagged_values(dat)
     if (is.null(adjust))
       adjust <- array(TRUE, dim=dim(dat))
@@ -92,6 +92,8 @@ Strict inequalities: %s",nm)
     if (!any(adj)) next
     
     x <- M[,i]
+    names(x) <- rownames(M)
+
     constr <- lintools::subst_value(L$A, L$b, variables=!adj, values=x[!adj])
     
     constr <- lintools::compact(
