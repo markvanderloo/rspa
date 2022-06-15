@@ -1,6 +1,8 @@
 version 0.2.7
--fixed bug match_restrictions. Would fail in some cases of explicitly named rows in 
- data frame. (Thanks to Patrick Driessens for reporting).
+- fixed bug in match_restrictions. Would fail in some cases of explicitly named rows in 
+  data frame. (Thanks to Patrick Driessens for reporting).
+- fixed bug in match_restrictions. In certain edge cases returned columns could be 
+  of class <matrix, array> (Thanks to Patrick Driessens for reporting).
 
 version 0.2.6
 - 'match_restrictions' now warns in the case of strict inequalities.

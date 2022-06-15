@@ -50,5 +50,10 @@ expect_equivalent(
 expect_silent(match_restrictions(data.frame(x=1,y=1), validator(x>=0)))
 
 
+result <- match_restrictions(
+            data.frame(x = 1, y = 1, row.names = 1L) 
+          , validate::validator(x >= 1))
+
+expect_inherits(result$x,"numeric")
 
 
