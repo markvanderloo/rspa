@@ -30,9 +30,9 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
    Rprintf("%3d : ",i+1);
    for (int j=0; j < n; j++){
       if ( hasnames ){ // get varname from 'names'
-         sprintf( varname, "%s",CHAR(STRING_ELT(names,x->index[i][j])) );
+         snprintf( varname, (size_t) 10000, "%s", CHAR(STRING_ELT(names,x->index[i][j])) );
       } else {  // make surrogate varnames
-         sprintf( varname, "X%d",x->index[i][j] );
+         sprintf( varname, (size_t) 10000, "X%d",x->index[i][j] );
       }
          
       Rprintf("%g*%s + ", x->A[i][j], varname );
@@ -40,9 +40,9 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
    // prevent -0 printing
    b = b == 0.0 ? 0.0 : b;    
    if ( hasnames ){ // get varname from 'names'
-      sprintf( varname, "%s",CHAR(STRING_ELT(names,x->index[i][n])) );
+      snprintf( varname,(size_t) 10000, "%s",CHAR(STRING_ELT(names,x->index[i][n])) );
    } else {  // make surrogate varnames
-     sprintf( varname, "X%d",x->index[i][n] );
+     snprintf( varname, (size_t) 10000, "X%d",x->index[i][n] );
    }
       Rprintf("%g*%s %.1s %g\n",x->A[i][n], varname, op , b);
 
