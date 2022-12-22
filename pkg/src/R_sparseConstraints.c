@@ -32,7 +32,7 @@ static void R_print_sc_row(SparseConstraints *x, int i, SEXP names){
       if ( hasnames ){ // get varname from 'names'
          snprintf( varname, (size_t) 10000, "%s", CHAR(STRING_ELT(names,x->index[i][j])) );
       } else {  // make surrogate varnames
-         sprintf( varname, (size_t) 10000, "X%d",x->index[i][j] );
+         snprintf( varname, (size_t) 10000, "X%d",x->index[i][j] );
       }
          
       Rprintf("%g*%s + ", x->A[i][j], varname );
