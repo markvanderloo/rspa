@@ -1,5 +1,5 @@
 version 0.2.8
-- Fixed a CRAN warning: sprintf is no longer used in C code (replaced with snprintf).
+- Fixed a CRAN warning: sprintf is no longer allowed in C code (replaced with snprintf).
 
 version 0.2.7
 - fixed bug in match_restrictions. Would fail in some cases of explicitly named rows in 
